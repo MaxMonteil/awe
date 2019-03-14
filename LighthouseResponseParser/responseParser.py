@@ -21,7 +21,7 @@ class ResponseParser:
 
     def __init__(self, lighthouseResponse):
         self.lhResponse = json.loads(lighthouseResponse)
-        self.auditData = {}
+        self._auditData = {}
 
     def filterResponse(self):
         '''
@@ -54,18 +54,35 @@ class ResponseParser:
         Groups the accessibility data by function.
 
         :param filteredResp: <JSON> Filtered Lighthouse response
-        :return: <JSON> Lighthouse response organized by AWE function
+        :return: None
         '''
 
-        clean = {}
-
         for ref in filteredResp['auditRefs']:
-            clean[ref['id']] = filteredResp['audits'][ref['id']]
-            clean[ref['id']].update(ref)
-            clean[ref['id']].pop('id')
+            self._auditData[ref['id']] = filteredResp['audits'][ref['id']]
+            self._auditData[ref['id']].update(ref)
+            self._auditData[ref['id']].pop('id')
 
-        return clean
+    def parseAuditData(self):
+        '''
+        Driver method to parse audit file.
 
+        :return: <bool> False if data already parsed, True otherwise
+        '''
+        if self._auditData:
+            return False
 
-if __name__ == '__main__':
-    print(AWE_FUNCTIONS)
+        self.cleanResponse(self.filterResponse())
+        return True
+
+    def getFunctionData(self, functionName):
+        '''
+        Getter method to access data related to AWE function.
+
+        :param functionName: <str> Name of the API function
+        :return: <dict> Function's audit data if valid otherwise an empty dict
+        '''
+
+        try:
+            return self._auditData[functionName]
+        except KeyError:
+            return {}
