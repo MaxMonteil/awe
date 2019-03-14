@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import json
 from constants import AWE_FUNCTIONS
 from responseParser import ResponseParser
 
@@ -11,7 +12,7 @@ def test(auditFilePath):
     rp = ResponseParser(readAuditFile(auditFilePath))
     rp.parseAuditData()
 
-    return rp.getFunctionData(AWE_FUNCTIONS[0])
+    return rp
 
 
 def readAuditFile(filePath):
@@ -25,6 +26,14 @@ def readAuditFile(filePath):
 
 if __name__ == '__main__':
     dirname = os.path.dirname(__file__)
-    result = test(os.path.join(dirname, LIGHTHOUSE_AUDIT_PATH))
+    filepath = os.path.join(dirname, LIGHTHOUSE_AUDIT_PATH)
 
-    print(result)
+    rp = test(filepath)
+
+    with open('testResults.json', 'w+') as resultFile:
+        for funcName in AWE_FUNCTIONS:
+            resultFile.write(json.dumps(
+                rp.getFunctionData(funcName),
+                indent=4,
+                sort_keys=True
+                ))
