@@ -8,6 +8,8 @@ The Accessible Web Engine aims to make the web more accessible by following WACG
 
 ** Indicates function is not feasible within the scope of this course. Requires an AI model.
 
+**DEMO** Indicates that this function needs to be implemented in time for the demo.
+
 ### accesskeys
 
 Adds accesskey attribute to interactive HTML elements.
@@ -132,7 +134,7 @@ Optimized HTML file
 </ul>
 ```
 
-### audio-caption
+### audio-caption **DEMO**
 
 Audio and video content in their corresponding HTML tags get subtitles or captions added in a `<track>` tag.
 
@@ -203,7 +205,7 @@ Optimized HTML file
 <header/>
 ```
 
-### color-contrast
+### color-contrast **DEMO**
 
 Modifies the background and foreground color of text content to increase the contrast. Defaults to black on white (or vice versa for dark themes).
 
@@ -223,7 +225,7 @@ Optimized HTML file
 
 ### definition-list
 
-Modifies to have `<dl>` elements contains only `<dt>` and `<dd>` children. Additionally, `<dt>` elements must always be followed by one or more `<dd>` elements.
+Ensures `<dl>` children elements are only of type`<dt>` and `<dd>`. Additionally, `<dt>` elements must always be followed by one or more `<dd>` elements.
 
 #### Input
 
@@ -396,7 +398,7 @@ Optimized HTML file
 </html>
 ```
 
-### Output
+##### Output
 
 ```HTML
 <html lang="fr">
@@ -438,7 +440,7 @@ There are three main ways to add alternate text to an image:
 <img arialabelledby="someID" src="...">
 ```
 
-### input-image-alt
+### input-image-alt **DEMO**
 
 Adds the missing alt text to image inputs like buttons, checkboxes, etc…
 
@@ -697,7 +699,7 @@ Optimized HTML file
 </tbody>
 ```
 
-### th-data-cells:
+### th-data-cells
 
 All non-empty `<td>` elements in a table larger than 3 by 3 must have an associated table header, by changing the `<td>` to a `<th>`.
 
@@ -823,7 +825,7 @@ Optimized HTML file
 <img src="bonjour.jpg" alt="Good morning">
 ```
 
-### video-caption
+### video-caption **DEMO**
 
 Adds captions to videos which don’t have captions.
 
