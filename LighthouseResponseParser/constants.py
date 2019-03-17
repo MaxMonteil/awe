@@ -22,7 +22,6 @@ AWE_FUNCTIONS = [
             'frame-title',
             'html-lang',
             'html-lang-valid',
-            'Output',
             'image-alt',
             'input-image-alt',
             'label',
@@ -35,7 +34,7 @@ AWE_FUNCTIONS = [
             'object-alt',
             'tab-index',
             'td-headers-attr',
-            'th-data-cells:',
+            'th-data-cells',
             'valid-lang',
             'video-caption',
             'video-description'
