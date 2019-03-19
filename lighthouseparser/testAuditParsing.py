@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-import os
+from parser import ResponseParser
+import constants
 import json
-from constants import AWE_FUNCTIONS
-from responseParser import ResponseParser
+import os
 
 LIGHTHOUSE_AUDIT_PATH = '../testData/lighthouseResponse.json'
 
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     rp = test(filepath)
 
     with open('testResults.json', 'w+') as resultFile:
-        for funcName in AWE_FUNCTIONS:
+        for funcName in constants.AWE_FUNCTIONS:
             resultFile.write(json.dumps(
                 rp.getFunctionData(funcName),
                 indent=4,

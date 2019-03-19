@@ -4,8 +4,8 @@
 Parses and distributes a Lighthouse audit response to the proper AWE functions.
 '''
 
+import constants
 import json
-from constants import AWE_FUNCTIONS
 
 
 class ResponseParser:
@@ -33,13 +33,13 @@ class ResponseParser:
         audits = {
                 function: audit for (function, audit) in
                 self.lhResponse['audits'].items()
-                if function in AWE_FUNCTIONS
+                if function in constants.AWE_FUNCTIONS
                 }
 
         auditRefs = [
                 auditRef for auditRef in
                 self.lhResponse['categories']['accessibility']['auditRefs']
-                if auditRef['id'] in AWE_FUNCTIONS
+                if auditRef['id'] in constants.AWE_FUNCTIONS
                 ]
 
         return {
