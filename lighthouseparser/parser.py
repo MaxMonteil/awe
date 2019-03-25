@@ -69,18 +69,18 @@ class ResponseParser:
             for (fn, data) in filtered.items()
         }
 
-    def parse_audit_data(self):
+    def parse_audit_data(self, force=False):
         '''
-        Driver method to parse audit file.
+        Parses the lighthouse response file by calling the cleaning and
+        filtering methods on it.
 
-        Return:
-            <bool> False if data already parsed, True otherwise
+        Only needs to run once but it can be force to run again on the file.
+
+        Parameters:
+            force <bool> Default False. If True will parse audit again
         '''
-        if self._auditData:
-            return False
-
-        self._clean_response(self._filter_response())
-        return True
+        if not self._auditData or force:
+            self._auditData = self._clean_response(self._filter_response())
 
     def get_function_data(self, functionName):
         '''
