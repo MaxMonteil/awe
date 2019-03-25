@@ -22,10 +22,10 @@ class ResponseParser:
     '''
 
     def __init__(self, lighthouseResponse):
-        self.lhResponse = json.loads(lighthouseResponse)
+        self._lhResponse = json.loads(lighthouseResponse)
         self._auditData = {}
 
-    def filterResponse(self):
+    def _filter_response(self):
         '''
         Removes all unnecessary data from the JSON object.
 
@@ -34,13 +34,13 @@ class ResponseParser:
         '''
         audits = {
                 function: audit for (function, audit) in
-                self.lhResponse['audits'].items()
+                self._lhResponse['audits'].items()
                 if function in constants.AWE_FUNCTIONS
                 }
 
         auditRefs = [
                 auditRef for auditRef in
-                self.lhResponse['categories']['accessibility']['auditRefs']
+                self._lhResponse['categories']['accessibility']['auditRefs']
                 if auditRef['id'] in constants.AWE_FUNCTIONS
                 ]
 
@@ -48,10 +48,10 @@ class ResponseParser:
                  'audits': audits,
                  'auditRefs': auditRefs,
                  'score':
-                 self.lhResponse['categories']['accessibility']['score']
+                 self._lhResponse['categories']['accessibility']['score']
                }
 
-    def cleanResponse(self, filteredResp):
+    def _clean_response(self, filteredResp):
         '''
         Groups the accessibility data by function.
 
@@ -63,7 +63,7 @@ class ResponseParser:
             self._auditData[ref['id']].update(ref)
             self._auditData[ref['id']].pop('id')
 
-    def parseAuditData(self):
+    def parse_audit_data(self):
         '''
         Driver method to parse audit file.
 
@@ -73,10 +73,10 @@ class ResponseParser:
         if self._auditData:
             return False
 
-        self.cleanResponse(self.filterResponse())
+        self._clean_response(self._filter_response())
         return True
 
-    def getFunctionData(self, functionName):
+    def get_function_data(self, functionName):
         '''
         Getter method to access data related to AWE function.
 
