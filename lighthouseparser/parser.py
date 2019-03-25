@@ -47,17 +47,27 @@ class ResponseParser:
 
         return filtered
 
-    def _clean_response(self, filteredResp):
+    def _clean_response(self, filtered):
         '''
-        Groups the accessibility data by function.
+        Cleans the filtered response from any unnecessary values.
 
         Parameters:
-            filteredResp <JSON> Filtered Lighthouse response
+            filtered <JSON> Filtered Lighthouse response
         '''
-        for ref in filteredResp['auditRefs']:
-            self._auditData[ref['id']] = filteredResp['audits'][ref['id']]
-            self._auditData[ref['id']].update(ref)
-            self._auditData[ref['id']].pop('id')
+        return {
+            fn: {
+                'failing': False if data['score'] == 1 else True,
+                'items': [
+                    {
+                        'selector': node['selector'],
+                        'path': node['path'],
+                        'snippet': node['snippet']
+                    }
+                    for node in data['details']['items']
+                ]
+            }
+            for (fn, data) in filtered.items()
+        }
 
     def parse_audit_data(self):
         '''
