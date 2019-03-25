@@ -13,10 +13,12 @@ class ResponseParser:
     The Response Parser class is in charge of parsing the Lighthouse audit
     response into a more manageable format that all AWE functions can refer to.
 
-    :param lighthouseResponse: <str> String response in JSON format
+    Parameters:
+        lighthouseResponse <str> String response in JSON format
 
-    :attr lighthouseResponse: <str> Where the string response is stored
-    :attr auditData: <dict> Maps audit data to appropriate AWE function
+    Attributes:
+        lighthouseResponse <str> Where the string response is stored
+        auditData <dict> Maps audit data to appropriate AWE function
     '''
 
     def __init__(self, lighthouseResponse):
@@ -27,9 +29,9 @@ class ResponseParser:
         '''
         Removes all unnecessary data from the JSON object.
 
-        :return: <dict> A new dictionary with only the data concerning a11y
+        Return:
+            <dict> A new dictionary with only the data concerning a11y
         '''
-
         audits = {
                 function: audit for (function, audit) in
                 self.lhResponse['audits'].items()
@@ -53,10 +55,9 @@ class ResponseParser:
         '''
         Groups the accessibility data by function.
 
-        :param filteredResp: <JSON> Filtered Lighthouse response
-        :return: None
+        Parameters:
+            filteredResp <JSON> Filtered Lighthouse response
         '''
-
         for ref in filteredResp['auditRefs']:
             self._auditData[ref['id']] = filteredResp['audits'][ref['id']]
             self._auditData[ref['id']].update(ref)
@@ -66,7 +67,8 @@ class ResponseParser:
         '''
         Driver method to parse audit file.
 
-        :return: <bool> False if data already parsed, True otherwise
+        Return:
+            <bool> False if data already parsed, True otherwise
         '''
         if self._auditData:
             return False
@@ -78,10 +80,12 @@ class ResponseParser:
         '''
         Getter method to access data related to AWE function.
 
-        :param functionName: <str> Name of the API function
-        :return: <dict> Function's audit data if valid otherwise an empty dict
-        '''
+        Parameters:
+            functionName <str> Name of the API function
 
+        Return:
+            <dict> Function's audit data if valid otherwise an empty dict
+        '''
         try:
             return self._auditData[functionName]
         except KeyError:
