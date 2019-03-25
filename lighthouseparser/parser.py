@@ -27,29 +27,25 @@ class ResponseParser:
 
     def _filter_response(self):
         '''
-        Removes all unnecessary data from the JSON object.
+        Removes all data from lighthouse response that isn't about
+        accessibility or about one of the AWE functions.
 
         Return:
-            <dict> A new dictionary with only the data concerning a11y
+            <dict> AWE function names mapped to lighthouse audit data
         '''
-        audits = {
-                function: audit for (function, audit) in
-                self._lhResponse['audits'].items()
-                if function in constants.AWE_FUNCTIONS
-                }
+        # Keep all dict values relating to AWE functions and set the function
+        # name as the key
+        filtered = {
+            function: audit for (function, audit) in
+            self._lhResponse['audits'].items()
+            if function in constants.AWE_FUNCTIONS
+        }
 
-        auditRefs = [
-                auditRef for auditRef in
-                self._lhResponse['categories']['accessibility']['auditRefs']
-                if auditRef['id'] in constants.AWE_FUNCTIONS
-                ]
+        filtered['score'] = (self._lhResponse['categories']
+                                             ['accessibility']
+                                             ['score'])
 
-        return {
-                 'audits': audits,
-                 'auditRefs': auditRefs,
-                 'score':
-                 self._lhResponse['categories']['accessibility']['score']
-               }
+        return filtered
 
     def _clean_response(self, filteredResp):
         '''
