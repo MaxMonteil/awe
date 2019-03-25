@@ -1,6 +1,6 @@
 # AWE
 
-![AWE Logo](/home/max/Pictures/awe_logo.png "The AWE Logo")
+![AWE Logo](../../../Pictures/awe_logo.png "The AWE Logo")
 
 The Accessibility Web Engine aims to make the web more accessible by following WACG 2.0 standard.
 
@@ -21,7 +21,7 @@ Although the internet is now over 30 years old, it is still incredibly difficult
 
 This project aims to make the internet more accessible through our Accessibility Web Engine API which works by taking the URL of a page, scanning it, and returning a version that reaches or surpassed the WCAG 2.0 AA guideline level.
 
-![API Structure](/home/max/Pictures/api_structure.png "The AWE API's structure")
+![API Structure](../../../Pictures/api_structure.png "The AWE API's structure")
 
 ## The Team
 
