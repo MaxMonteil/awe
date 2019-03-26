@@ -4,6 +4,7 @@
 Parses and distributes a Lighthouse audit response to the proper AWE functions.
 '''
 
+from bs4 import BeautifulSoup
 import constants
 import json
 
@@ -61,7 +62,7 @@ class ResponseParser:
                     {
                         'selector': node['selector'],
                         'path': node['path'],
-                        'snippet': node['snippet']
+                        'snippet': BeautifulSoup(node['snippet'])
                     }
                     for node in data['details']['items']
                 ]
