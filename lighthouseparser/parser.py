@@ -4,6 +4,7 @@
 Parses and distributes a Lighthouse audit response to the proper AWE functions.
 '''
 
+from bs4 import BeautifulSoup
 import constants
 import json
 
@@ -13,75 +14,85 @@ class ResponseParser:
     The Response Parser class is in charge of parsing the Lighthouse audit
     response into a more manageable format that all AWE functions can refer to.
 
-    :param lighthouseResponse: <str> String response in JSON format
+    Parameters:
+        lighthouseResponse <str> String response in JSON format
 
-    :attr lighthouseResponse: <str> Where the string response is stored
-    :attr auditData: <dict> Maps audit data to appropriate AWE function
+    Attributes:
+        lighthouseResponse <str> Where the string response is stored
+        auditData <dict> Maps audit data to appropriate AWE function
     '''
 
     def __init__(self, lighthouseResponse):
-        self.lhResponse = json.loads(lighthouseResponse)
+        self._lhResponse = json.loads(lighthouseResponse)
         self._auditData = {}
 
-    def filterResponse(self):
+    def _filter_response(self):
         '''
-        Removes all unnecessary data from the JSON object.
+        Removes all data from lighthouse response that isn't about
+        accessibility or about one of the AWE functions.
 
-        :return: <dict> A new dictionary with only the data concerning a11y
+        Return:
+            <dict> AWE function names mapped to lighthouse audit data
         '''
+        # Keep all dict values relating to AWE functions and set the function
+        # name as the key
+        filtered = {
+            function: audit for (function, audit) in
+            self._lhResponse['audits'].items()
+            if function in constants.AWE_FUNCTIONS
+        }
 
-        audits = {
-                function: audit for (function, audit) in
-                self.lhResponse['audits'].items()
-                if function in constants.AWE_FUNCTIONS
-                }
+        filtered['score'] = (self._lhResponse['categories']
+                                             ['accessibility']
+                                             ['score'])
 
-        auditRefs = [
-                auditRef for auditRef in
-                self.lhResponse['categories']['accessibility']['auditRefs']
-                if auditRef['id'] in constants.AWE_FUNCTIONS
-                ]
+        return filtered
 
+    def _clean_response(self, filtered):
+        '''
+        Cleans the filtered response from any unnecessary values.
+
+        Parameters:
+            filtered <JSON> Filtered Lighthouse response
+        '''
         return {
-                 'audits': audits,
-                 'auditRefs': auditRefs,
-                 'score':
-                 self.lhResponse['categories']['accessibility']['score']
-               }
+            fn: {
+                'failing': False if data['score'] == 1 else True,
+                'items': [
+                    {
+                        'selector': node['selector'],
+                        'path': node['path'],
+                        'snippet': BeautifulSoup(node['snippet'])
+                    }
+                    for node in data['details']['items']
+                ]
+            }
+            for (fn, data) in filtered.items()
+        }
 
-    def cleanResponse(self, filteredResp):
+    def parse_audit_data(self, force=False):
         '''
-        Groups the accessibility data by function.
+        Parses the lighthouse response file by calling the cleaning and
+        filtering methods on it.
 
-        :param filteredResp: <JSON> Filtered Lighthouse response
-        :return: None
+        Only needs to run once but it can be force to run again on the file.
+
+        Parameters:
+            force <bool> Default False. If True will parse audit again
         '''
+        if not self._auditData or force:
+            self._auditData = self._clean_response(self._filter_response())
 
-        for ref in filteredResp['auditRefs']:
-            self._auditData[ref['id']] = filteredResp['audits'][ref['id']]
-            self._auditData[ref['id']].update(ref)
-            self._auditData[ref['id']].pop('id')
-
-    def parseAuditData(self):
-        '''
-        Driver method to parse audit file.
-
-        :return: <bool> False if data already parsed, True otherwise
-        '''
-        if self._auditData:
-            return False
-
-        self.cleanResponse(self.filterResponse())
-        return True
-
-    def getFunctionData(self, functionName):
+    def get_function_data(self, functionName):
         '''
         Getter method to access data related to AWE function.
 
-        :param functionName: <str> Name of the API function
-        :return: <dict> Function's audit data if valid otherwise an empty dict
-        '''
+        Parameters:
+            functionName <str> Name of the API function
 
+        Return:
+            <dict> Function's audit data if valid otherwise an empty dict
+        '''
         try:
             return self._auditData[functionName]
         except KeyError:
