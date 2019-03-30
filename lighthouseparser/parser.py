@@ -22,7 +22,7 @@ class ResponseParser:
         auditData <dict> Maps audit data to appropriate AWE function
     '''
 
-    def __init__(self, lighthouseResponse, functionNames):
+    def __init__(self, *, lighthouseResponse, functionNames):
         self._lhResponse = json.loads(lighthouseResponse)
         self._functions = functionNames
         self._auditData = {}
