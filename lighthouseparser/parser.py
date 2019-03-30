@@ -5,7 +5,6 @@ Parses and distributes a Lighthouse audit response to the proper AWE functions.
 '''
 
 from bs4 import BeautifulSoup
-import constants
 import json
 
 
@@ -16,14 +15,16 @@ class ResponseParser:
 
     Parameters:
         lighthouseResponse <str> String response in JSON format
+        functionNames <list> List of all the supported a11y functions
 
     Attributes:
         lighthouseResponse <str> Where the string response is stored
         auditData <dict> Maps audit data to appropriate AWE function
     '''
 
-    def __init__(self, lighthouseResponse):
+    def __init__(self, lighthouseResponse, functionNames):
         self._lhResponse = json.loads(lighthouseResponse)
+        self._functions = functionNames
         self._auditData = {}
 
     def _filter_response(self):
@@ -39,7 +40,7 @@ class ResponseParser:
         filtered = {
             function: audit for (function, audit) in
             self._lhResponse['audits'].items()
-            if function in constants.AWE_FUNCTIONS
+            if function in self._functions
         }
 
         filtered['score'] = (self._lhResponse['categories']
