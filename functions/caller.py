@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-Helper module to manage imports of awe functions
+Helper module to manage imports of awe functions.
 '''
 
 from functions.accesskeys import accesskeys
@@ -88,14 +88,13 @@ class Caller:
         "video_description": video_description,
     }
 
-    def run(self, functionName, *args, **kwargs):
+    def run(self, *, name, data):
         """
         Main method to call each helper function. Just pass the function name
         and any arguments (positional or keyword).
 
         Parameters:
-            functionName <str> Name of the function to run
-            args <any> All positional arguments
-            kwargs <any> All keyword arguments
+            name <str> Name of the function to run
+            data <dict> Data required by the called function
         """
-        return self.functions[functionName].run(args, kwargs)
+        return self.functions[name].run(data)
