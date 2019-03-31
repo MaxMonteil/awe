@@ -4,7 +4,6 @@
 Parses and distributes a Lighthouse audit response to the proper AWE functions.
 """
 
-from bs4 import BeautifulSoup
 import json
 
 
@@ -61,7 +60,7 @@ class ResponseParser:
                     {
                         "selector": node["selector"],
                         "path": node["path"],
-                        "snippet": BeautifulSoup(node["snippet"])
+                        "snippet": node["snippet"],
                     }
                     for node in data["details"]["items"]
                 ]
@@ -82,7 +81,7 @@ class ResponseParser:
         if not self._auditData or force:
             self._auditData = self._clean_response(self._filter_response())
 
-    def get_function_data(self, functionName):
+    def get_audit_data(self, functionName=None):
         """
         Getter method to access data related to AWE function.
 
@@ -91,8 +90,12 @@ class ResponseParser:
 
         Return:
             <dict> Function's audit data if valid otherwise an empty dict
+                   If functionName is None returns all parsed data
         """
         try:
-            return self._auditData[functionName]
+            if functionName:
+                return self._auditData[functionName]
+
+            return self._auditData
         except KeyError:
             return {}
