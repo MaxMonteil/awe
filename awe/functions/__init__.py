@@ -1,3 +1,3 @@
-from functions.caller import Caller
+from awe.functions.caller import Caller
 
 __all__ = ["Caller"]
