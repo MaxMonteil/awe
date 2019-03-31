@@ -10,6 +10,6 @@ xvfb-run --server-args='-screen 0, 1024x768x16' \
                  --start-maximized \
                  --no-first-run \
                  --remote-debugging-port=9222 "about:blank" & lighthouse \
-                 --output $2 \
-                 --output-path results/result.$2 \
-                 --port=9222 $1
+                 --output $OUTPUT_FORMAT \
+                 --output-path results/result.$OUTPUT_FORMAT \
+                 --port=9222 $URL
