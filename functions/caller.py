@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-'''
+"""
 Helper module to manage imports of awe functions.
-'''
+"""
 
 from functions.accesskeys import accesskeys
 from functions.aria_allowed_attr import aria_allowed_attr
@@ -88,13 +88,13 @@ class Caller:
         "video_description": video_description,
     }
 
-    def run(self, *, name, data):
+    def run(self, *, name, failingItems):
         """
         Main method to call each helper function. Just pass the function name
         and any arguments (positional or keyword).
 
         Parameters:
             name <str> Name of the function to run
-            data <dict> Data required by the called function
+            failingItems <list> Elements that fail 'name' function tests
         """
-        return self.functions[name].run(data)
+        return self.functions[name].run(failingItems)
