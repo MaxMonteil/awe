@@ -5,7 +5,7 @@ import json
 from constants import AWE_FUNCTIONS
 from responseParser import ResponseParser
 
-LIGHTHOUSE_AUDIT_PATH = '/var/www/awe/api/result.json'
+LIGHTHOUSE_AUDIT_PATH = '/var/www/awe/results/result.json'
 
 
 def test(auditFilePath):
@@ -32,8 +32,10 @@ if __name__ == '__main__':
 
     with open('/var/www/awe/api/testResults.json', 'w') as resultFile:
         for funcName in AWE_FUNCTIONS:
-            resultFile.write(json.dumps(
-                rp.getFunctionData(funcName),
-                indent=4,
-                sort_keys=True
-                ))
+            resultFile.write(
+                json.dumps(
+                    rp.getFunctionData(funcName),
+                    indent=4,
+                    sort_keys=True
+                )
+            )
