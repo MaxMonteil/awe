@@ -65,3 +65,6 @@ _mailinglist
 result.html
 result.json
 testResults.json
+output.html
+output.txt
+package-lock.json
