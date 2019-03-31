@@ -55,7 +55,7 @@ def run_engine(lhAudit):
         if functionData["failing"]:
             result[functionName] = awe_caller.run(
                 name=functionName,
-                data=functionData,
+                failingItems=functionData["items"],
             )
 
     return result
