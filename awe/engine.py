@@ -18,6 +18,7 @@ target site.
 from .functions import Caller as AWECaller
 from .lighthouseparser import ResponseParser
 from . import constants
+from bs4 import BeautifulSoup
 
 
 class Engine:
@@ -45,6 +46,9 @@ class Engine:
     def run_engine(self):
         """
         Organizes function calls sending them the proper HTML and Audit data.
+
+        Functions are called with the following input format
+        [{selector: data, path: data, snippet: htmlstring},{...}]
 
         Parameters:
             lhAudit <ResponseParser> Parser object with the parsed audit
