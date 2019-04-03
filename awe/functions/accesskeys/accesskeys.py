@@ -4,8 +4,10 @@ from string import ascii_lowercase, ascii_uppercase
 
 def run(html):
     """
-    Takes as input a list of all parsed html strings which include interactive
-    html elements and adds an "accesskey" attribute to each one.
+    Adds accesskey attribute to all interactive HTML elements.
+
+    Input:
+        list of HTML strings 
     """
     #to be assigned to accesskey values
     char = list(ascii_lowercase) + list(ascii_uppercase)
