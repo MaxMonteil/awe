@@ -19,7 +19,7 @@ def getUrl():
     OUTPUT_FILE = OUTPUT_DIR + output_format
 
     subprocess.call(
-        ["sudo", "bash", f"{ROOT_DIR}run.sh", target_url, output_format],
+        ["sudo", "bash", f"{ROOT_DIR}run_lighthouse.sh", target_url, output_format],
         bufsize=0,
     )
 
