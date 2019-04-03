@@ -24,5 +24,4 @@ def run(html):
                 # Assigns the first available character to the created 'accesskey' value
                 i['accesskey'] = char.pop(0)
         out.append(soup)
-    # .prettify returns a list of serilized and formatted html string
     return out

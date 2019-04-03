@@ -45,10 +45,7 @@ class Engine:
 
     def run_engine(self):
         """
-        Organizes function calls sending them the proper HTML and Audit data.
-
-        Functions are called with the following input format
-        [{selector: data, path: data, snippet: htmlstring},{...}]
+        Organizes function calls sending them the proper HTML string list.
 
         Parameters:
             lhAudit <ResponseParser> Parser object with the parsed audit
