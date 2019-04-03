@@ -56,6 +56,7 @@ class ResponseParser:
         return {
             functionName: {
                 "failing": False if data["score"] == 1 else True,
+                #TODO Keep only the snippet
                 "items": [
                     {
                         "selector": node["selector"],
