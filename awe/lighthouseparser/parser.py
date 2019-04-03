@@ -56,15 +56,7 @@ class ResponseParser:
         return {
             functionName: {
                 "failing": False if data["score"] == 1 else True,
-                #TODO Keep only the snippet
-                "items": [
-                    {
-                        "selector": node["selector"],
-                        "path": node["path"],
-                        "snippet": node["snippet"],
-                    }
-                    for node in data["details"]["items"]
-                ]
+                "items": [node["snippet"] for node in data["details"]["items"]]
             }
             for (functionName, data) in filtered.items()
         }
