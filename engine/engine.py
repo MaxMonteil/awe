@@ -45,6 +45,15 @@ class Engine:
     def run_engine(self):
         """
         Organizes function calls sending them the proper HTML and Audit data.
+        Accessibility functions receive a dictionary with keys ["colors", "selector",
+        "snippet"].
+
+        The color key contains the foreground and background colors for the
+        color-contrast function only. Empty object for others.
+
+        selector is the css selector for the tag.
+
+        snippet is the failing HTML tag as a string.
 
         Parameters:
             lhAudit <ResponseParser> Parser object with the parsed audit
