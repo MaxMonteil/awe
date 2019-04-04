@@ -68,4 +68,4 @@ testResults.json
 output.html
 output.txt
 package-lock.json
-results/
+results/*

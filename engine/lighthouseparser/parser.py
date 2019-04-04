@@ -57,6 +57,9 @@ class ResponseParser:
 
         Parameters:
             filtered <JSON> Filtered Lighthouse response
+
+        Return:
+            cleaned <dict> Mapping of useful values from the filtered response
         """
         # failing: the function was tested and it did not pass WCAG
         # applicable: unknown if it passed or failed, the function can't be tested
@@ -64,16 +67,41 @@ class ResponseParser:
             functionName: {
                 "failing": False if data["score"] == 1 else True,
                 "applicable": data["score"] is not None,
+                "description": data["description"],
                 "items": [
                     {
                         "snippet": node["node"]["snippet"],
                         "selector": node["node"]["selector"],
+                        "colors": self._extract_hex_codes(node["node"]["explanation"]),
                     }
                     for node in data["details"]["items"]
                 ],
             }
             for (functionName, data) in filtered.items()
         }
+
+    def _extract_hex_codes(self, explanation):
+        """
+        Extract the two hexadecimal codes in the explanation which represent the
+        foreground and the background colors.
+
+        Parameters:
+            explanation <str> Explanation of what is wrong and how to fix it
+
+        Return:
+            colors <dict> Hex foreground and background colors if it is the
+                          color-contrast explanation, empty object otherwise
+        """
+        fore = explanation.find("#")
+        # Hash was not found means that this wasn't the 'color-contrast' function
+        if fore != -1:
+            fore = explanation[fore : fore + 6]
+            back = explanation.rfind("#")
+            back = explanation[back : back + 6]
+
+            return {"foreground": fore, "background": back}
+        else:
+            return {}
 
     def parse_audit_data(self, force=False):
         """
@@ -98,8 +126,9 @@ class ResponseParser:
             functionName <str> Name of the API function
 
         Return:
-            <dict> Function's audit data if valid otherwise an empty dict
-                   If functionName is None returns all parsed data
+            audit <dict> Function's audit data if functionName is valid
+                         If functionName is None returns all parsed data
+                         Otherwise returns an empty object
         """
         if functionName in self._auditData:
             return self._auditData[functionName]
