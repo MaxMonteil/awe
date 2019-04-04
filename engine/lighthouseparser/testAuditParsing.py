@@ -9,10 +9,7 @@ import sys
 
 def test(auditFilePath, names):
     with open(auditFilePath, "r") as auditFile:
-        rp = ResponseParser(
-            lighthouseResponse=auditFile.read(),
-            functionNames=names
-        )
+        rp = ResponseParser(lighthouseResponse=auditFile.read(), functionNames=names)
         rp.parse_audit_data()
 
         return rp
@@ -27,9 +24,4 @@ if __name__ == "__main__":
     rp = test(AUDIT_FILE, constants.AWE_FUNCTIONS)
 
     with open(OUTPUT_FILE, "w+") as resultFile:
-        resultFile.write(json.dumps(
-                rp.get_audit_data(),
-                indent=4,
-                sort_keys=True,
-            )
-        )
+        resultFile.write(json.dumps(rp.get_audit_data(), indent=4, sort_keys=True))

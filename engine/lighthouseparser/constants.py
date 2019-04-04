@@ -30,5 +30,5 @@ AWE_FUNCTIONS = [
     "th-data-cells",
     "valid-lang",
     "video-caption",
-    "video-description"
+    "video-description",
 ]

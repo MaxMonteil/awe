@@ -15,9 +15,7 @@ def run(html):
     Return:
         <list> List of beautiful soup tags with proper accesskey attributes
     """
-    htmlTags = [
-        BeautifulSoup(item["snippet"], "html.parser").find() for item in html
-    ]
+    htmlTags = [BeautifulSoup(item["snippet"], "html.parser").find() for item in html]
 
     alphanum_keys = available_keys(htmlTags)
 
@@ -34,7 +32,7 @@ def available_keys(htmlSnippets):
         alphanum_keys <set> Characters available to assign as accesskeys
     """
     alphanum_keys = set(ascii_letters + ascii_digits)
-    for tag in htmlSnippets[:len(alphanum_keys)]:
+    for tag in htmlSnippets[: len(alphanum_keys)]:
         if tag.has_attr("accesskey"):
             if set(tag.get_attribute_list("accesskey")).issubset(alphanum_keys):
                 # Removes already used accesskey values from the alphanumbet list
@@ -59,7 +57,7 @@ def add_keys(htmlTags, keyMap):
         out <list> BS4 tags with accesskey attributes
     """
     out = []
-    for tag in htmlTags[:len(keyMap)]:
+    for tag in htmlTags[: len(keyMap)]:
         if (not tag.has_attr("accesskey")) or tag["accesskey"] == "":
             # Assigns an arbitrary character to the created 'accesskey' value
             tag["accesskey"] = keyMap.pop()

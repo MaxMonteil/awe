@@ -42,8 +42,8 @@ class ResponseParser:
         # Keep all dict values relating to AWE functions and set the function
         # name as the key
         filtered = {
-            function: dict(placeholder, **audit) for (function, audit) in
-            self._lhResponse["audits"].items()
+            function: dict(placeholder, **audit)
+            for (function, audit) in self._lhResponse["audits"].items()
             if function in self._functions
         }
 
@@ -70,7 +70,7 @@ class ResponseParser:
                         "selector": node["node"]["selector"],
                     }
                     for node in data["details"]["items"]
-                 ]
+                ],
             }
             for (functionName, data) in filtered.items()
         }
