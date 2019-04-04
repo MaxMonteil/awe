@@ -41,8 +41,7 @@ def crawl():
     render = request.args.get("render", default=1, type=int)
 
     subprocess.call(
-        ["sudo", "node", "/var/www/awe/api/crawler/crawler.js", target_url],
-        bufsize=0,
+        ["sudo", "node", "/var/www/awe/api/crawler/crawler.js", target_url], bufsize=0
     )
 
     if render:
@@ -50,7 +49,9 @@ def crawl():
     else:
         subprocess.call(
             [
-                "sudo", "cp", "/var/www/awe/api/output.html",
+                "sudo",
+                "cp",
+                "/var/www/awe/api/output.html",
                 "/var/www/awe/api/output.txt",
             ],
             bufsize=0,

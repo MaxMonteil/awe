@@ -42,8 +42,8 @@ class ResponseParser:
         # Keep all dict values relating to AWE functions and set the function
         # name as the key
         filtered = {
-            function: dict(placeholder, **audit) for (function, audit) in
-            self._lhResponse["audits"].items()
+            function: dict(placeholder, **audit)
+            for (function, audit) in self._lhResponse["audits"].items()
             if function in self._functions
         }
 
@@ -72,10 +72,10 @@ class ResponseParser:
                     {
                         "snippet": node["node"]["snippet"],
                         "selector": node["node"]["selector"],
-                        "colors": self._extract_hex_codes(node["node"]["explanation"])
+                        "colors": self._extract_hex_codes(node["node"]["explanation"]),
                     }
                     for node in data["details"]["items"]
-                 ],
+                ],
             }
             for (functionName, data) in filtered.items()
         }
@@ -95,14 +95,11 @@ class ResponseParser:
         fore = explanation.find("#")
         # Hash was not found means that this wasn't the 'color-contrast' function
         if fore != -1:
-            fore = explanation[fore:fore+6]
+            fore = explanation[fore : fore + 6]
             back = explanation.rfind("#")
-            back = explanation[back:back+6]
+            back = explanation[back : back + 6]
 
-            return {
-                "foreground": fore,
-                "background": back,
-            }
+            return {"foreground": fore, "background": back}
         else:
             return {}
 

@@ -31,13 +31,13 @@ class Engine:
         audit_data <str> The resulting audit from running Google Lighthouse on
                          the target site.
     """
+
     def __init__(self, *, site_html, audit_data):
         self.site_html = site_html
 
         # Parse result of audit
         self.lhAudit = ResponseParser(
-            lighthouseResponse=audit_data,
-            functionNames=constants.AWE_FUNCTIONS,
+            lighthouseResponse=audit_data, functionNames=constants.AWE_FUNCTIONS
         )
 
         self.lhAudit.parse_audit_data()
@@ -67,8 +67,7 @@ class Engine:
 
             if functionData["failing"] and functionData["applicable"]:
                 result[functionName] = awe_caller.run(
-                    name=functionName,
-                    failingItems=functionData["items"],
+                    name=functionName, failingItems=functionData["items"]
                 )
 
         return result
