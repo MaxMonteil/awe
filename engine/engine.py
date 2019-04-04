@@ -56,7 +56,7 @@ class Engine:
         for functionName in constants.AWE_FUNCTIONS:
             functionData = self.lhAudit.get_audit_data(functionName)
 
-            if functionData["failing"]:
+            if functionData["failing"] and functionData["applicable"]:
                 result[functionName] = awe_caller.run(
                     name=functionName,
                     failingItems=functionData["items"],
