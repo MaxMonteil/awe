@@ -6,10 +6,10 @@ def run(html):
     """
     Adds accesskey attribute to all interactive HTML elements.
 
-    Input:
-        List of HTML strings
-    Output:
-        List of beautiful soup items with proper accesskey attributes
+    Parameters:
+        html <list> List of html code snippets of string type
+    Return:
+        <list> List of beautiful soup items with proper accesskey attributes
     """
     alphanum_keys = set(ascii_letters + ascii_digits)
 
