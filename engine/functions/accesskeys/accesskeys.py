@@ -12,20 +12,22 @@ def run(html):
         List of beautiful soup items with proper accesskey attributes
     """
     # To be assigned to accesskey values
-    char = list(ascii_lowercase) + list(ascii_uppercase)
+    alpha = list(ascii_lowercase + ascii_uppercase)
+    htmlSnippets = [
+        BeautifulSoup(node["snippet"], "html.parser") for node in html["items"]
+    ]
+
     out = []
-    for snippet in html:
-        soup = BeautifulSoup(snippet, "html.parser")
+    for snippet in htmlSnippets:
         # Iterates over all html tags in the string
-        for i in soup.findAll():
+        for i in snippet.findAll():
             if i.has_attr('accesskey'):
-                # Removes already used accesskey values from the char list
-                char.remove(i['accesskey'][0])
-    for snippet in html:
-        soup = BeautifulSoup(snippet, "html.parser")
-        for i in soup.findAll():
-            if not i.has_attr('accesskey'):
+                # Removes already used accesskey values from the alphabet list
+                alpha.remove(i['accesskey'][0])
+            else:
                 # Assigns the first available character to the created 'accesskey' value
-                i['accesskey'] = char.pop(0)
-        out.append(soup)
+                i['accesskey'] = alpha.pop(0)
+
+        out.append(snippet)
+
     return out
