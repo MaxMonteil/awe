@@ -26,7 +26,7 @@ class ResponseParser:
         self._functions = functionNames
         self._auditData = {}
 
-    def _filter_response(self):
+    def _filter_response_for_accessibility(self):
         """
         Removes all data from lighthouse response that isn't about
         accessibility or about one of the AWE functions.
@@ -34,17 +34,22 @@ class ResponseParser:
         Return:
             <dict> AWE function names mapped to lighthouse audit data
         """
+        # When a function is not applicable (eg: audio-caption on a page with no audio
+        # content) the node does not have a "details" key. This placeholder serves to
+        # give the node a default value while looping through them
+        placeholder = {"details": {"items": []}}
+
         # Keep all dict values relating to AWE functions and set the function
         # name as the key
         filtered = {
-            function: audit for (function, audit) in
+            function: dict(placeholder, **audit) for (function, audit) in
             self._lhResponse["audits"].items()
             if function in self._functions
         }
 
-        filtered["score"] = self._lhResponse["categories"]["accessibility"]["score"]
+        score = self._lhResponse["categories"]["accessibility"]["score"]
 
-        return filtered
+        return filtered, score
 
     def _clean_response(self, filtered):
         """
@@ -53,17 +58,19 @@ class ResponseParser:
         Parameters:
             filtered <JSON> Filtered Lighthouse response
         """
+        # failing: the function was tested and it did not pass WCAG
+        # applicable: unknown if it passed or failed, the function can't be tested
         return {
             functionName: {
                 "failing": False if data["score"] == 1 else True,
+                "applicable": data["score"] is not None,
                 "items": [
                     {
-                        "selector": node["selector"],
-                        "path": node["path"],
-                        "snippet": node["snippet"],
+                        "snippet": node["node"]["snippet"],
+                        "selector": node["node"]["selector"],
                     }
                     for node in data["details"]["items"]
-                ]
+                 ]
             }
             for (functionName, data) in filtered.items()
         }
@@ -79,7 +86,9 @@ class ResponseParser:
             force <bool> Default False. If True will parse audit again
         """
         if not self._auditData or force:
-            self._auditData = self._clean_response(self._filter_response())
+            filtered_response, score = self._filter_response_for_accessibility()
+            self._auditData = self._clean_response(filtered_response)
+            self._auditData["score"] = score
 
     def get_audit_data(self, functionName=None):
         """
@@ -92,10 +101,9 @@ class ResponseParser:
             <dict> Function's audit data if valid otherwise an empty dict
                    If functionName is None returns all parsed data
         """
-        try:
-            if functionName:
-                return self._auditData[functionName]
-
+        if functionName in self._auditData:
+            return self._auditData[functionName]
+        elif functionName is None:
             return self._auditData
-        except KeyError:
+        else:
             return {}
