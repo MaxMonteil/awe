@@ -4,13 +4,6 @@
 
 AWE_FUNCTIONS = [
     "accesskeys",
-    "aria-allowed-attr",
-    "aria-required-attr",
-    "aria-required-children",
-    "aria-required-parent",
-    "aria-roles",
-    "aria-valid-attr-value",
-    "aria-valid-attr",
     "audio-caption",
     "button-name",
     "bypass",
