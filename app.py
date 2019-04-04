@@ -1,8 +1,13 @@
-from awe import Engine
-from flask import Flask, request, send_file, jsonify
+import engine
+from flask import Flask, request, send_file, jsonify, render_template
 import subprocess
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_folder="dist/static",
+    template_folder="dist",
+)
+
 ROOT_DIR = "/var/www/awe/"
 OUTPUT_DIR = ROOT_DIR + "/results/"
 
@@ -30,9 +35,9 @@ def get_url():
     with open(OUTPUT_FILE, "r") as auditFile:
         audit = auditFile.read()
 
-    engine = Engine(audit_data=audit)
+    eng = engine.Engine(audit_data=audit)
 
-    return jsonify(engine.lhAudit.get_audit_data()), 200
+    return jsonify(eng.lhAudit.get_audit_data()), 200
 
 
 @app.route("/api/crawl")
@@ -60,8 +65,8 @@ def crawl():
 
 
 @app.route("/")
-def hello():
-    return "Hello from AWE!"
+def index():
+    return render_template("index.html")
 
 
 if __name__ == "__main__":
