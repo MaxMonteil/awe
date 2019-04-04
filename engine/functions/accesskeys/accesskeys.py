@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from string import ascii_lowercase, ascii_uppercase
+from string import ascii_letters, digits as ascii_digits
 
 
 def run(html):
@@ -11,23 +11,33 @@ def run(html):
     Output:
         List of beautiful soup items with proper accesskey attributes
     """
-    # To be assigned to accesskey values
-    alpha = list(ascii_lowercase + ascii_uppercase)
-    htmlSnippets = [
-        BeautifulSoup(node["snippet"], "html.parser") for node in html["items"]
+    alphanum_keys = set(ascii_letters + ascii_digits)
+
+    # Snippets always only have one tag
+    htmlTags = [
+        BeautifulSoup(node["snippet"], "html.parser").find() for node in html["items"]
     ]
 
     out = []
-    for snippet in htmlSnippets:
-        # Iterates over all html tags in the string
-        for i in snippet.findAll():
-            if i.has_attr('accesskey'):
-                # Removes already used accesskey values from the alphabet list
-                alpha.remove(i['accesskey'][0])
-            else:
-                # Assigns the first available character to the created 'accesskey' value
-                i['accesskey'] = alpha.pop(0)
 
-        out.append(snippet)
+    # In case there are more Tags than accesskey characters, only assign keys to the
+    # first len(alphanum_keys) Tags. Prevents KeyError from alphanum_keys.pop() if
+    # empty. Normally a page shouldn't need that many acceskeys anyway.
+    for tag in htmlTags[:len(alphanum_keys)]:
+        if tag.has_attr("accesskey"):
+            if set(tag.get_attribute_list("accesskey")).issubset(alphanum_keys):
+                # Removes already used accesskey values from the alphanumbet list
+                alphanum_keys.difference_update(
+                    set(tag.get_attribute_list("accesskey"))
+                )
+            else:
+                # This key was already removed and is a duplicate, assign a new one
+                tag.get_attribute_list("accesskey").append(alphanum_keys.pop())
+
+        else:
+            # Assigns an arbitrary character to the created 'accesskey' value
+            tag.get_attribute_list("accesskey").append(alphanum_keys.pop())
+
+        out.append(tag)
 
     return out
