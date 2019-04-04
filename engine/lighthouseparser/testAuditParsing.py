@@ -1,39 +1,35 @@
 #!/usr/bin/env python
 
 from parser import ResponseParser
+from pathlib import Path
 import constants
 import json
-import os
-
-LIGHTHOUSE_AUDIT_PATH = '../testData/lighthouseResponse.json'
+import sys
 
 
-def test(auditFilePath):
-    rp = ResponseParser(readAuditFile(auditFilePath))
-    rp.parseAuditData()
+def test(auditFilePath, names):
+    with open(auditFilePath, "r") as auditFile:
+        rp = ResponseParser(
+            lighthouseResponse=auditFile.read(),
+            functionNames=names
+        )
+        rp.parse_audit_data()
 
-    return rp
-
-
-def readAuditFile(filePath):
-    audit = ''
-
-    with open(filePath, 'r') as auditFile:
-        audit = auditFile.read()
-
-    return audit
+        return rp
 
 
-if __name__ == '__main__':
-    dirname = os.path.dirname(__file__)
-    filepath = os.path.join(dirname, LIGHTHOUSE_AUDIT_PATH)
+if __name__ == "__main__":
+    AUDIT_FILE = Path.cwd().joinpath("engine/lighthouseparser/audit.json")
 
-    rp = test(filepath)
+    OUTPUT_FILE = Path(sys.argv[2]) if len(sys.argv) > 2 else Path.cwd()
+    OUTPUT_FILE = OUTPUT_FILE.joinpath("results/testResult.json")
 
-    with open('testResults.json', 'w+') as resultFile:
-        for funcName in constants.AWE_FUNCTIONS:
-            resultFile.write(json.dumps(
-                rp.getFunctionData(funcName),
+    rp = test(AUDIT_FILE, constants.AWE_FUNCTIONS)
+
+    with open(OUTPUT_FILE, "w+") as resultFile:
+        resultFile.write(json.dumps(
+                rp.get_audit_data(),
                 indent=4,
-                sort_keys=True
-                ))
+                sort_keys=True,
+            )
+        )
