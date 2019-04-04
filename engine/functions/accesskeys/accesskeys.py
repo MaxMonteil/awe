@@ -11,56 +11,59 @@ def run(html):
     empty. Normally a page shouldn't need that many acceskeys anyway.
 
     Parameters:
-        <list> List of dicts, this function only needs the "items" values from the dicts
+        html <list> Dictionary with HTML snippets as strings
     Return:
-        <list> List of beautiful soup items with proper accesskey attributes
+        <list> List of beautiful soup tags with proper accesskey attributes
     """
-    
     htmlTags = [
-        BeautifulSoup(item["snippet"], "html.parser") for item in html
+        BeautifulSoup(item["snippet"], "html.parser").find() for item in html
     ]
 
-    alphanum_keys = AvailableKeys(htmlTags)
+    alphanum_keys = available_keys(htmlTags)
 
-    return AddKeys(htmlTags, alphanum_keys)
+    return add_keys(htmlTags, alphanum_keys)
 
 
-def AvailableKeys(htmlSnippets):
+def available_keys(htmlSnippets):
     """
-    Input:
-        list of BS4 objects
-    Output:
-        A set of characters available to assign to accesskeys
-    """
+    Clarifies which keys are available to assign to the HTML tags.
 
+    Parameters:
+        htmlSnippets <list> BS4 tags
+    Return:
+        alphanum_keys <set> Characters available to assign as accesskeys
+    """
     alphanum_keys = set(ascii_letters + ascii_digits)
-    for snippet in htmlSnippets[:len(alphanum_keys)]:
-        #Iterates over the HTML's tags. 
-        for tag in snippet.findAll():
-            if tag.has_attr("accesskey"):
-                if set(tag.get_attribute_list("accesskey")).issubset(alphanum_keys):
-                    # Removes already used accesskey values from the alphanumbet list
-                    alphanum_keys.difference_update(
-                        set(tag.get_attribute_list("accesskey"))
-                    )
-                else:
-                    # This key was already removed and is a duplicate. Remove the attribute value
-                    tag["accesskey"] = ""
+    for tag in htmlSnippets[:len(alphanum_keys)]:
+        if tag.has_attr("accesskey"):
+            if set(tag.get_attribute_list("accesskey")).issubset(alphanum_keys):
+                # Removes already used accesskey values from the alphanumbet list
+                alphanum_keys.difference_update(
+                    set(tag.get_attribute_list("accesskey"))
+                )
+            else:
+                # This key was already removed and is a duplicate
+                tag["accesskey"] = ""
+
     return alphanum_keys
 
-def AddKeys(htmlSnippets, keyMap):
+
+def add_keys(htmlTags, keyMap):
     """
-    Input:
-        list of BS4 objects
-        set of available chars
-    Output:
-        A list of BS4 objects with accesskey attributes
+    Adds available keys from the key map to the HTML tags.
+
+    Parameters:
+        htmlTags <list> BS4 tags
+        keyMap <set> Available access key characters
+    Return:
+        out <list> BS4 tags with accesskey attributes
     """
     out = []
-    for snippet in htmlSnippets[:len(keyMap)]:
-        for tag in snippet.findAll():
-            if (not tag.has_attr("accesskey")) or tag["accesskey"]=="":
-                # Assigns an arbitrary character to the created 'accesskey' value
-                tag["accesskey"] = keyMap.pop()
-        out.append(snippet)
+    for tag in htmlTags[:len(keyMap)]:
+        if (not tag.has_attr("accesskey")) or tag["accesskey"] == "":
+            # Assigns an arbitrary character to the created 'accesskey' value
+            tag["accesskey"] = keyMap.pop()
+
+        out.append(tag)
+
     return out
