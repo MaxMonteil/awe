@@ -14,13 +14,13 @@ puppeteer
   })
   .then(function(html) {
     fs.writeFile("output.html", html, function(err) {
-    if(err) {
-        return console.log(err);
-    }
+      if(err) {
+          return console.log(err);
+      }
 
-    console.log("The file was saved!");
-    process.exit()
-});
+      console.log("The file was saved!");
+      process.exit()
+    });
   })
   .catch(function(err) {
     console.log(err);
