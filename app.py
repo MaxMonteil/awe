@@ -8,7 +8,7 @@ OUTPUT_DIR = ROOT_DIR + "/results/"
 
 
 @app.route("/api/")
-def getUrl():
+def get_url():
     target_url = request.args.get("url", default="", type=str)
     output_format = request.args.get("output", default="json", type=str)
 
@@ -35,6 +35,33 @@ def getUrl():
     return jsonify(engine.lhAudit.get_audit_data()), 200
 
 
+@app.route("/api/crawl")
+def crawl():
+    target_url = request.args.get("url", default="", type=str)
+    render = request.args.get("render", default=1, type=int)
+
+    subprocess.call(
+        ["sudo", "node", "/var/www/awe/api/crawler/crawler.js", target_url],
+        bufsize=0,
+    )
+
+    if render:
+        return send_file("/var/www/awe/api/output.html")
+    else:
+        subprocess.call(
+            [
+                "sudo", "cp", "/var/www/awe/api/output.html",
+                "/var/www/awe/api/output.txt",
+            ],
+            bufsize=0,
+        )
+        return send_file("/var/www/awe/api/output.txt")
+
+
 @app.route("/")
 def hello():
     return "Hello from AWE!"
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
