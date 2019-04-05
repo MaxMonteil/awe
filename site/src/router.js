@@ -25,6 +25,11 @@ export default new Router({
       path: '/visualizer',
       name: 'visualizer',
       component: () => import('./views/Visualizer.vue')
+    },
+    {
+      path: '*',
+      name: '404',
+      component: () => import('./views/NotFound.vue')
     }
   ]
 })
