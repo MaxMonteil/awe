@@ -12,7 +12,7 @@ export default {
 
 <style scoped>
 #the-footer {
-    position: static;
+    position: absolute;
     display: flex;
     background-color: #1A1918;
     height: 64px;
@@ -20,10 +20,12 @@ export default {
     align-items: center;
     width: 100%;
     margin-top: 64px;
+    left: 0;
 }
 
 #copyright {
     color: white;
     font-size: 12px;
+    user-select: none;
 }
 </style>
