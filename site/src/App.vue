@@ -9,7 +9,7 @@
       </span>
     </div>
     <router-view class="narrow"/>
-    <the-footer/>
+    <!-- <the-footer/> -->
   </div>
 </template>
 
@@ -66,9 +66,6 @@ export default {
   color: gray;
 }
 
-.current-page {
-  font-weight: bold;
-}
 .current-page:visited {
   color: #4384F8;
 }
