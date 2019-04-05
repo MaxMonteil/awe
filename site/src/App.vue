@@ -1,16 +1,32 @@
 <template>
   <div id="app">
-    <div id="nav">
+    <div id="nav" class="narrow">
       <img alt="AWE logo" src="./assets/logo.png" height="50">
       <span id="nav-links">
-        <router-link class="nav-link" to="/">Home</router-link>
-        <router-link class="nav-link" to="/visualizer">Visualizer</router-link>
-        <router-link class="nav-link" to="/about">About</router-link>
+        <router-link class="nav-link" :class="{'current-page': current == 'home'}" to="/">Home</router-link>
+        <router-link class="nav-link" :class="{'current-page': current == 'visualizer'}" to="/visualizer">Visualizer</router-link>
+        <router-link class="nav-link" :class="{'current-page': current == 'about'}" to="/about">About</router-link>
       </span>
     </div>
-    <router-view/>
+    <router-view class="narrow"/>
+    <the-footer/>
   </div>
 </template>
+
+<script>
+import TheFooter from '@/components/TheFooter.vue'
+
+export default {
+  computed: {
+    current() {
+      return this.$route.name
+    }
+  },
+  components: {
+    TheFooter,
+  }
+}
+</script>
 
 <style scoped>
 #app {
@@ -19,6 +35,9 @@
   -moz-osx-font-smoothing: grayscale;
   color: #1A1918;
   margin-top: 16px;
+}
+
+.narrow {
   padding: 0 20%;
 }
 
@@ -45,5 +64,12 @@
 
 .nav-link:visited {
   color: gray;
+}
+
+.current-page {
+  font-weight: bold;
+}
+.current-page:visited {
+  color: #4384F8;
 }
 </style>

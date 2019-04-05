@@ -16,6 +16,7 @@
 
     <h2>How It Works</h2>
     <img alt="AWE architecture" src="../assets/architecture.png" width="100%">
+
     <ol>
       <li>
         <h3>Send us your Webpage URL</h3>
@@ -53,7 +54,7 @@
 
 <style>
 #tagline {
-  font-size: 5em;
+  font-size: 4.6vw;
   color: #4384F8;
 }
 
