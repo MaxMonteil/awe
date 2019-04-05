@@ -10,10 +10,11 @@ app = Flask(
 )
 
 ROOT_DIR = "/var/www/awe/"
-OUTPUT_DIR = ROOT_DIR + "/results/"
+ROOT_DIR = "/home/max/Documents/253/awe/"
+OUTPUT_DIR = ROOT_DIR + "results/"
 
 
-@app.route("/api/")
+@app.route("/api/analyze")
 def get_url():
     target_url = request.args.get("url", default="", type=str)
     output_format = request.args.get("output", default="json", type=str)
@@ -22,22 +23,26 @@ def get_url():
     if output_format not in ["html", "json"]:
         output_format = "json"
 
-    OUTPUT_FILE = OUTPUT_DIR + output_format
+    OUTPUT_FILE = OUTPUT_DIR + "parsed_audit." + output_format
 
+    print("Calling lighthouse")
     subprocess.call(
         ["sudo", "bash", f"{ROOT_DIR}run_lighthouse.sh", target_url, output_format],
         bufsize=0,
     )
 
     if output_format is "html":
+        print("Sending html file")
         return send_file(OUTPUT_FILE)
 
     audit = ""
+    print("Reading json output")
     with open(OUTPUT_FILE, "r") as auditFile:
         audit = auditFile.read()
 
     eng = engine.Engine(audit_data=audit)
 
+    print("Returning json output")
     return jsonify(eng.lhAudit.get_audit_data()), 200
 
 
