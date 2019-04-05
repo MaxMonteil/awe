@@ -52,7 +52,7 @@
   </div>
 </template>
 
-<style>
+<style scoped>
 #tagline {
   font-size: 4.6vw;
   color: #4384F8;
