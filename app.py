@@ -1,5 +1,6 @@
-import engine
 from flask import Flask, request, send_file, jsonify, render_template
+import engine
+import requests
 import subprocess
 
 app = Flask(
@@ -64,8 +65,11 @@ def crawl():
         return send_file("/var/www/awe/api/output.txt")
 
 
-@app.route("/")
-def index():
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def catch_all(path):
+    if app.debug:
+        return requests.get(f"http://localhost:8080/{path}").text
     return render_template("index.html")
 
 
