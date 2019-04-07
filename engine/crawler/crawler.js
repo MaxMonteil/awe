@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const url = process.argv.slice(2)[0];
 const fs = require('fs');
+const outputDir = process.argv.slice(3)[0]
 
 puppeteer
   .launch({ args: [ '--no-sandbox', '--disable-setuid-sandbox' ] })
@@ -13,7 +14,7 @@ puppeteer
     });
   })
   .then(function(html) {
-    fs.writeFile("output.html", html, function(err) {
+    fs.writeFile(outputDir+"output.html", html, function(err) {
       if(err) {
           return console.log(err);
       }

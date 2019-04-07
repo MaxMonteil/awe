@@ -2,6 +2,7 @@ from flask import Flask, request, send_file, jsonify, render_template
 import engine
 import requests
 import subprocess
+import os
 
 app = Flask(
     __name__,
@@ -9,9 +10,8 @@ app = Flask(
     template_folder="dist",
 )
 
-ROOT_DIR = "/var/www/awe/"
-ROOT_DIR = "/home/max/Documents/253/awe/"
-OUTPUT_DIR = ROOT_DIR + "results/"
+ROOT_DIR = os.getcwd()
+OUTPUT_DIR = ROOT_DIR + "/results/"
 
 
 @app.route("/api/analyze")
@@ -27,11 +27,11 @@ def get_url():
 
     print("Calling lighthouse")
     subprocess.call(
-        ["sudo", "bash", f"{ROOT_DIR}run_lighthouse.sh", target_url, output_format],
+        ["bash", f"{ROOT_DIR}/run_lighthouse.sh", target_url, output_format],
         bufsize=0,
     )
 
-    if output_format is "html":
+    if output_format == "html":
         print("Sending html file")
         return send_file(OUTPUT_FILE)
 
@@ -39,7 +39,6 @@ def get_url():
     print("Reading json output")
     with open(OUTPUT_FILE, "r") as auditFile:
         audit = auditFile.read()
-
     eng = engine.Engine(audit_data=audit)
 
     print("Returning json output")
@@ -52,26 +51,25 @@ def crawl():
     render = request.args.get("render", default=1, type=int)
 
     subprocess.call(
-        ["sudo", "node", "/var/www/awe/api/crawler/crawler.js", target_url], bufsize=0
+        ["node", f"{ROOT_DIR}/engine/crawler/crawler.js", target_url, OUTPUT_DIR], bufsize=0
     )
 
     if render:
-        return send_file("/var/www/awe/api/output.html")
+        return send_file(f"{OUTPUT_DIR}/output.html")
     else:
         subprocess.call(
             [
-                "sudo",
                 "cp",
-                "/var/www/awe/api/output.html",
-                "/var/www/awe/api/output.txt",
+                f"{OUTPUT_DIR}/output.html",
+                f"{OUTPUT_DIR}/output.txt",
             ],
             bufsize=0,
         )
-        return send_file("/var/www/awe/api/output.txt")
+        return send_file(f"{OUTPUT_DIR}/output.txt")
 
 
 @app.route("/", defaults={"path": ""})
-@app.route("/<path:path>")
+#@app.route("/<path:path>")
 def catch_all(path):
     if app.debug:
         return requests.get(f"http://localhost:8080/{path}").text

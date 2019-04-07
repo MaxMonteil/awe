@@ -32,8 +32,8 @@ class Engine:
                          the target site.
     """
 
-    def __init__(self, *, site_html, audit_data):
-        self.site_html = site_html
+    def __init__(self, *, audit_data):
+        #self.site_html = site_html
 
         # Parse result of audit
         self.lhAudit = ResponseParser(
