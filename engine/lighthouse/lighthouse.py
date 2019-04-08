@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from parser import ResponseParser
+from io import BytesIO
 import json
 import subprocess
 
@@ -14,9 +15,10 @@ class Lighthouse:
         self._parser = None
 
     def run(self, force=False):
-        self._run_lighthouse_audit()
-        self._build_parser()
-        self._run_parser(force)
+        self._lighthouse_response = self._run_lighthouse_audit()
+        if self._audit_format == "json":
+            self._build_parser()
+            self._run_parser(force)
 
     def _run_lighthouse_audit(self):
         completed_process = subprocess.run(
@@ -29,7 +31,14 @@ class Lighthouse:
             capture_output=True  # Avoid creating a file, keep it in memory
         )
 
-        self._lighthouse_response = json.loads(completed_process.stdout)
+        if self._audit_format == "json":
+            return json.loads(completed_process.stdout)
+        else:
+            # save the bytestring output as a file-like object for transfers
+            s = BytesIO()
+            s.write(completed_process.stdout)
+            s.seek(0)
+            return s
 
     def _build_parser(self):
         self._parser = ResponseParser(
@@ -38,7 +47,10 @@ class Lighthouse:
         )
 
     def get_audit_data(self, function_name=None):
-        return self._parser.get_audit_data(function_name)
+        if self._audit_format == "json":
+            return self._parser.get_audit_data(function_name)
+        else:
+            return self._lighthouse_response
 
     def _run_parser(self, force=False):
         if self._parser is None:
