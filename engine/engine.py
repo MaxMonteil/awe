@@ -16,7 +16,7 @@ target site.
 # from lighthouse import lighthouseAuditer
 
 from .functions import Caller as AWECaller
-from .lighthouseparser import ResponseParser
+from .lighthouse import Lighthouse
 from . import constants
 
 
@@ -32,15 +32,20 @@ class Engine:
                          the target site.
     """
 
-    def __init__(self, *, site_html, audit_data):
+    def __init__(self, *, target_url, audit_format, site_html, audit_data):
+        self.target_url = target_url
+        self.audit_format = audit_format
         self.site_html = site_html
 
-        # Parse result of audit
-        self.lhAudit = ResponseParser(
-            lighthouseResponse=audit_data, functionNames=constants.AWE_FUNCTIONS
+        self._lighthouse = Lighthouse(
+            function_names=constants.AWE_FUNCTIONS,
+            target_url=target_url,
+            audit_format=audit_format,
         )
 
-        self.lhAudit.parse_audit_data()
+    def get_full_audit_data(self):
+        """Wrapper around lighthouse audit to return the full parsed audit"""
+        return self._lighthouse.get_audit_data()
 
     def run_engine(self):
         """
@@ -54,16 +59,13 @@ class Engine:
         selector is the css selector for the tag.
 
         snippet is the failing HTML tag as a string.
-
-        Parameters:
-            lhAudit <ResponseParser> Parser object with the parsed audit
         """
         awe_caller = AWECaller()
 
         result = {}
 
         for functionName in constants.AWE_FUNCTIONS:
-            functionData = self.lhAudit.get_audit_data(functionName)
+            functionData = self._lighthouse.get_audit_data(functionName)
 
             if functionData["failing"] and functionData["applicable"]:
                 result[functionName] = awe_caller.run(
