@@ -28,14 +28,18 @@ class Engine:
 
     Parameters:
         site_html <str> The HTML code of the target site
-        audit_data <str> The resulting audit from running Google Lighthouse on
-                         the target site.
     """
 
-    def __init__(self, *, target_url, audit_format, site_html, audit_data):
+    def __init__(
+        self,
+        *,
+        target_url,
+        audit_format="json",
+        site_html=None,
+    ):
         self.target_url = target_url
-        self.audit_format = audit_format
-        self.site_html = site_html
+        self._audit_format = audit_format
+        self._site_html = site_html
 
         self._lighthouse = Lighthouse(
             function_names=constants.AWE_FUNCTIONS,
@@ -46,6 +50,9 @@ class Engine:
     def get_full_audit_data(self):
         """Wrapper around lighthouse audit to return the full parsed audit"""
         return self._lighthouse.get_audit_data()
+
+    def run_analysis(self, force=False):
+        self._lighthouse.run(force)
 
     def run_engine(self):
         """
