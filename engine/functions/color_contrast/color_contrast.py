@@ -37,23 +37,29 @@ def run(html):
         # Set initial conditions for the foreground text color
         cond = {
             "contrast": not contrast.passes_AA(
-                contrast.rgb([v/RGB_LIMIT for v in back], [v/RGB_LIMIT for v in fore])
+                contrast.rgb(
+                    [v / RGB_LIMIT for v in back], [v / RGB_LIMIT for v in fore]
+                )
             ),
             "notLightest": max(fore) < RGB_LIMIT or backLight,
             "notDarkest": all(fore) or not backLight,
         }
 
-        print(all(cond.values()))
         while all(cond.values()):
             fore = [
-                color + (
-                    -min(COLOR_STEP, color) if backLight else
-                    min(COLOR_STEP, RGB_LIMIT - color)
-                ) for color in fore
+                color
+                + (
+                    -min(COLOR_STEP, color)
+                    if backLight
+                    else min(COLOR_STEP, RGB_LIMIT - color)
+                )
+                for color in fore
             ]
 
             cond["contrast"] = not contrast.passes_AA(
-                contrast.rgb([v/RGB_LIMIT for v in back], [v/RGB_LIMIT for v in fore])
+                contrast.rgb(
+                    [v / RGB_LIMIT for v in back], [v / RGB_LIMIT for v in fore]
+                )
             )
             cond["notLightest"] = max(fore) < RGB_LIMIT or backLight
             cond["notDarkest"] = all(fore) or not backLight
@@ -64,14 +70,19 @@ def run(html):
 
         while all(cond.values()):
             back = [
-                color + (
-                    min(COLOR_STEP, RGB_LIMIT - color) if backLight else
-                    -min(COLOR_STEP, color)
-                ) for color in back
+                color
+                + (
+                    min(COLOR_STEP, RGB_LIMIT - color)
+                    if backLight
+                    else -min(COLOR_STEP, color)
+                )
+                for color in back
             ]
 
             cond["contrast"] = not contrast.passes_AA(
-                contrast.rgb([v/RGB_LIMIT for v in back], [v/RGB_LIMIT for v in fore])
+                contrast.rgb(
+                    [v / RGB_LIMIT for v in back], [v / RGB_LIMIT for v in fore]
+                )
             )
             cond["notLightest"] = max(back) < RGB_LIMIT or not backLight
             cond["notDarkest"] = all(back) or backLight
@@ -112,7 +123,7 @@ def hex_to_rgb(hexValue):
     Return:
         <tuple> RGB color values
     """
-    return list(int(hexValue[i: i + 2], 16) for i in range(0, 6, 2))
+    return list(int(hexValue[i : i + 2], 16) for i in range(0, 6, 2))
 
 
 def rgb_to_hex(RGBValues):
