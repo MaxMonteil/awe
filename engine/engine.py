@@ -14,8 +14,10 @@ target site.
 
 from . import constants
 from .crawler import Crawler
-from .functions import Caller as AWECaller
+from .functions import Caller
 from .lighthouse import Lighthouse
+from bs4 import BeautifulSoup
+import asyncio
 
 
 class Engine:
@@ -67,10 +69,13 @@ class Engine:
         return self._crawler.get_raw_html()
 
     def run_engine(self):
+        self._reassemble_site(asyncio.run(self._run_functions()))
+
+    async def _run_functions(self):
         """
         Organizes function calls sending them the proper HTML and Audit data.
-        Accessibility functions receive a dictionary with keys ["colors", "selector",
-        "snippet"].
+        Accessibility functions receive a dictionary with keys:
+        ["colors", "selector", "snippet", "path"]
 
         The color key contains the foreground and background colors for the
         color-contrast function only. Empty object for others.
@@ -78,24 +83,31 @@ class Engine:
         selector is the css selector for the tag.
 
         snippet is the failing HTML tag as a string.
+
+        path is the HTML tree path to the snippet
         """
-        awe_caller = AWECaller()
+        await asyncio.gather(self.run_analysis(), self.run_crawler())
+        awe_caller = Caller()
 
-        result = {}
-
+        results = []
         for functionName in constants.AWE_FUNCTIONS:
             functionData = self._lighthouse.get_audit_data(functionName)
 
             if functionData["failing"] and functionData["applicable"]:
-                result[functionName] = awe_caller.run(
-                    name=functionName, failingItems=functionData["items"]
+                results.append(
+                    awe_caller.run(
+                        name=functionName,
+                        failingItems=functionData["items"],
+                    )
                 )
 
-        return result
+        return results
 
-    def reassemble_site(self):
+    def _reassemble_site(self, function_results):
         """
         Recombines the site's HTML into a more accessible version by replacing
         the offending code with the output of the corresponding AWE function.
         """
-        pass
+        site_html = self._crawler.get_html_soup()
+        for result in function_results:
+            pass
