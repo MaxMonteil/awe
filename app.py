@@ -5,11 +5,7 @@ import os
 import requests
 import asyncio
 
-app = Flask(
-    __name__,
-    static_folder="dist/static",
-    template_folder="dist",
-)
+app = Flask(__name__, static_folder="dist/static", template_folder="dist")
 
 ROOT_DIR = Path(os.environ.get("ROOT_DIR"))
 OUTPUT_DIR = Path(ROOT_DIR, "results/")
@@ -32,11 +28,14 @@ def get_analysis():
     if output_format == "json":
         return jsonify(engine.get_full_audit_data()), 200
     else:
-        return send_file(
-            engine.get_full_audit_data(),
-            as_attachment=True,
-            attachment_filename=f"awe_analysis.{output_format}",
-        ), 200
+        return (
+            send_file(
+                engine.get_full_audit_data(),
+                as_attachment=True,
+                attachment_filename=f"awe_analysis.{output_format}",
+            ),
+            200,
+        )
 
 
 @app.route("/api/crawl")
@@ -47,11 +46,14 @@ def crawl():
     engine = Engine(target_url=target_url)
     asyncio.run(engine.run_crawler())
 
-    return send_file(
-        engine.get_html(),
-        as_attachment=True,
-        attachment_filename="awe_site_crawl.html",
-    ), 200
+    return (
+        send_file(
+            engine.get_html(),
+            as_attachment=True,
+            attachment_filename="awe_site_crawl.html",
+        ),
+        200,
+    )
 
 
 @app.route("/", defaults={"path": ""})

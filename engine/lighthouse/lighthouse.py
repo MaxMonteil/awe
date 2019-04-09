@@ -28,7 +28,7 @@ class Lighthouse:
                 self._target_url,
                 self._audit_format,
             ],
-            capture_output=True  # Avoid creating a file, keep it in memory
+            capture_output=True,  # Avoid creating a file, keep it in memory
         )
 
         if self._audit_format == "json":
@@ -43,7 +43,7 @@ class Lighthouse:
     def _build_parser(self):
         self._parser = ResponseParser(
             lighthouse_response=self._lighthouse_response,
-            function_names=self._function_names
+            function_names=self._function_names,
         )
 
     def get_audit_data(self, function_name=None):

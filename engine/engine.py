@@ -28,12 +28,7 @@ class Engine:
         site_html <str> The HTML code of the target site
     """
 
-    def __init__(
-        self,
-        *,
-        target_url,
-        audit_format="json",
-    ):
+    def __init__(self, *, target_url, audit_format="json"):
         self.target_url = target_url
         self._audit_format = audit_format
 

@@ -24,6 +24,7 @@ class Crawler:
         _raw_html <str> The raw scraped HTML of the site at target_url
         _bs_html <BeautifulSoup> The parsed HTML of the site
     """
+
     def __init__(self, *, target_url):
         self._target_url = target_url
         self._raw_html = None

@@ -93,9 +93,9 @@ class ResponseParser:
         fore = explanation.find("#")
         # Hash was not found means that this wasn't the 'color-contrast' function
         if fore != -1:
-            fore = explanation[fore:fore + 6]
+            fore = explanation[fore : fore + 6]
             back = explanation.rfind("#")
-            back = explanation[back:back + 6]
+            back = explanation[back : back + 6]
 
             return {"foreground": fore, "background": back}
         else:
