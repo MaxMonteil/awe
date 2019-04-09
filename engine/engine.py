@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Main class for the Accessibility Web Engine.
@@ -45,15 +45,31 @@ class Engine:
             audit_format=audit_format,
         )
 
-    def get_full_audit_data(self):
-        """Wrapper around lighthouse audit to return the full parsed audit"""
-        return self._lighthouse.get_audit_data()
-
     def run_analysis(self, force=False):
+        """
+        Runs a lighthouse analysis on the site.
+
+        Parameters:
+            force <bool> Force a rerun of the analysis
+        """
         self._lighthouse.run(force)
 
-    async def run_crawler(self):
-        await self._crawler.crawl()
+    def get_full_audit_data(self):
+        """Get the full parsed audit"""
+        return self._lighthouse.get_audit_data()
+
+    async def run_crawler(self, force=False):
+        """
+        Crawls the site and scrapes the HTML.
+
+        Parameters:
+            force <bool> Force a rerun of the crawl
+        """
+        await self._crawler.crawl(force)
+
+    def get_html(self):
+        """Get the crawled html of the site."""
+        return self._crawler.get_raw_html()
 
     def run_engine(self):
         """
