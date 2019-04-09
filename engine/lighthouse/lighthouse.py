@@ -1,9 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from .parser import ResponseParser
 from io import BytesIO
+import asyncio
 import json
-import subprocess
+# import subprocess
 
 
 class Lighthouse:
@@ -14,29 +15,59 @@ class Lighthouse:
         self._lighthouse_response = None
         self._parser = None
 
-    def run(self, force=False):
-        self._lighthouse_response = self._run_lighthouse_audit()
+    async def run(self, force=False):
+        self._lighthouse_response = await self._run_lighthouse_audit()
         if self._audit_format == "json":
             self._build_parser()
             self._run_parser(force)
 
-    def _run_lighthouse_audit(self):
-        completed_process = subprocess.run(
-            [
-                "bash",
-                "./engine/lighthouse/run_lighthouse.sh",
-                self._target_url,
-                self._audit_format,
-            ],
-            capture_output=True,  # Avoid creating a file, keep it in memory
+    # def _run_lighthouse_audit(self):
+    #     completed_process = subprocess.run(
+    #        [
+    #            "bash",
+    #            "./engine/lighthouse/run_lighthouse.sh",
+    #            self._target_url,
+    #            self._audit_format,
+    #        ],
+    #        capture_output=True,  # Avoid creating a file, keep it in memory
+    #     )
+
+    #     if self._audit_format == "json":
+    #         return json.loads(completed_process.stdout)
+    #     else:
+    #         # save the bytestring output as a file-like object for transfers
+    #         s = BytesIO()
+    #         s.write(completed_process.stdout)
+    #         s.seek(0)
+    #         return s
+
+    async def _run_lighthouse_audit(self):
+        proc = await asyncio.create_subprocess_shell(
+            " ".join(
+                [
+                    "bash",
+                    "./engine/lighthouse/run_lighthouse.sh",
+                    self._target_url,
+                    self._audit_format,
+                ]
+            ),
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
         )
 
+        stdout, stderr = await proc.communicate()
+
+        if stderr:
+            raise SystemError(
+                f"Lightouse exited with {proc.returncode}\n{stderr.decode()}"
+            )
+
         if self._audit_format == "json":
-            return json.loads(completed_process.stdout)
+            return json.loads(stdout)
         else:
             # save the bytestring output as a file-like object for transfers
             s = BytesIO()
-            s.write(completed_process.stdout)
+            s.write(stdout)
             s.seek(0)
             return s
 
