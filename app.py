@@ -22,7 +22,7 @@ def get_analysis():
 
     print("Calling lighthouse")
     engine = Engine(target_url=target_url)
-    engine.run_analysis()
+    asyncio.run(engine.run_analysis())
 
     print("Sending analysis")
     if output_format == "json":
