@@ -22,6 +22,7 @@ class Lighthouse:
             self._build_parser()
             self._run_parser(force)
 
+    # Non async version just in case
     # def _run_lighthouse_audit(self):
     #     completed_process = subprocess.run(
     #        [
