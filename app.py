@@ -1,9 +1,9 @@
+from engine import Engine
 from flask import Flask, request, send_file, jsonify, render_template
 from pathlib import Path
-from engine import Engine
 import os
 import requests
-import subprocess
+import asyncio
 
 app = Flask(
     __name__,
@@ -42,26 +42,16 @@ def get_analysis():
 @app.route("/api/crawl")
 def crawl():
     target_url = request.args.get("url", default="", type=str)
-    render = request.args.get("render", default=1, type=int)
 
-    subprocess.call(
-        ["sudo", "node", f"{str(ROOT_DIR)}/engine/crawler/crawler.js", target_url],
-        bufsize=0,
-    )
+    print("Calling crawler")
+    engine = Engine(target_url=target_url)
+    asyncio.run(engine.run_crawler())
 
-    if render:
-        return send_file(f"{str(ROOT_DIR)}/output.html")
-    else:
-        subprocess.call(
-            [
-                "sudo",
-                "cp",
-                "{str(ROOT_DIR)}/output.html",
-                "{str(ROOT_DIR)}/output.txt",
-            ],
-            bufsize=0,
-        )
-        return send_file("{str(ROOT_DIR)}/output.txt")
+    return send_file(
+        engine.get_html(),
+        as_attachment=True,
+        attachment_filename="awe_site_crawl.html",
+    ), 200
 
 
 @app.route("/", defaults={"path": ""})
