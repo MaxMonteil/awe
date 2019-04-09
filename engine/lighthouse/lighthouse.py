@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from parser import ResponseParser
+from .parser import ResponseParser
 from io import BytesIO
 import json
 import subprocess
