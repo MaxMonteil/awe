@@ -11,13 +11,11 @@ Finally, it reassembles the function outputs into the accessible version of the
 target site.
 """
 
-# TODO
-# from .crawler import HTMLCrawler
-# from lighthouse import lighthouseAuditer
 
+from . import constants
+from .crawler import Crawler
 from .functions import Caller as AWECaller
 from .lighthouse import Lighthouse
-from . import constants
 
 
 class Engine:
@@ -35,11 +33,11 @@ class Engine:
         *,
         target_url,
         audit_format="json",
-        site_html=None,
     ):
         self.target_url = target_url
         self._audit_format = audit_format
-        self._site_html = site_html
+
+        self._crawler = Crawler(target_url=self.target_url)
 
         self._lighthouse = Lighthouse(
             function_names=constants.AWE_FUNCTIONS,
@@ -53,6 +51,9 @@ class Engine:
 
     def run_analysis(self, force=False):
         self._lighthouse.run(force)
+
+    async def run_crawler(self):
+        await self._crawler.crawl()
 
     def run_engine(self):
         """
