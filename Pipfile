@@ -9,6 +9,10 @@ verify_ssl = true
 flask = "*"
 bs4 = "*"
 wcag-contrast-ratio = "*"
+black = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
