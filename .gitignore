@@ -25,7 +25,6 @@ src/.temp
 node_modules/
 
 # General
-dist/
 build/
 docs/_build/
 

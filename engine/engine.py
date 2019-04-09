@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Main class for the Accessibility Web Engine.
@@ -11,13 +11,11 @@ Finally, it reassembles the function outputs into the accessible version of the
 target site.
 """
 
-# TODO
-# from .crawler import HTMLCrawler
-# from lighthouse import lighthouseAuditer
 
-from .functions import Caller as AWECaller
-from .lighthouseparser import ResponseParser
 from . import constants
+from .crawler import Crawler
+from .functions import Caller as AWECaller
+from .lighthouse import Lighthouse
 
 
 class Engine:
@@ -28,19 +26,45 @@ class Engine:
 
     Parameters:
         site_html <str> The HTML code of the target site
-        audit_data <str> The resulting audit from running Google Lighthouse on
-                         the target site.
     """
 
-    def __init__(self, *, site_html, audit_data):
-        self.site_html = site_html
+    def __init__(self, *, target_url, audit_format="json"):
+        self.target_url = target_url
+        self._audit_format = audit_format
 
-        # Parse result of audit
-        self.lhAudit = ResponseParser(
-            lighthouseResponse=audit_data, functionNames=constants.AWE_FUNCTIONS
+        self._crawler = Crawler(target_url=self.target_url)
+
+        self._lighthouse = Lighthouse(
+            function_names=constants.AWE_FUNCTIONS,
+            target_url=target_url,
+            audit_format=audit_format,
         )
 
-        self.lhAudit.parse_audit_data()
+    async def run_analysis(self, force=False):
+        """
+        Runs a lighthouse analysis on the site.
+
+        Parameters:
+            force <bool> Force a rerun of the analysis
+        """
+        await self._lighthouse.run(force)
+
+    def get_full_audit_data(self):
+        """Get the full parsed audit"""
+        return self._lighthouse.get_audit_data()
+
+    async def run_crawler(self, force=False):
+        """
+        Crawls the site and scrapes the HTML.
+
+        Parameters:
+            force <bool> Force a rerun of the crawl
+        """
+        await self._crawler.crawl(force)
+
+    def get_html(self):
+        """Get the crawled html of the site."""
+        return self._crawler.get_raw_html()
 
     def run_engine(self):
         """
@@ -54,16 +78,13 @@ class Engine:
         selector is the css selector for the tag.
 
         snippet is the failing HTML tag as a string.
-
-        Parameters:
-            lhAudit <ResponseParser> Parser object with the parsed audit
         """
         awe_caller = AWECaller()
 
         result = {}
 
         for functionName in constants.AWE_FUNCTIONS:
-            functionData = self.lhAudit.get_audit_data(functionName)
+            functionData = self._lighthouse.get_audit_data(functionName)
 
             if functionData["failing"] and functionData["applicable"]:
                 result[functionName] = awe_caller.run(

@@ -4,8 +4,6 @@
 Parses and distributes a Lighthouse audit response to the proper AWE functions.
 """
 
-import json
-
 
 class ResponseParser:
     """
@@ -13,17 +11,17 @@ class ResponseParser:
     response into a more manageable format that all AWE functions can refer to.
 
     Parameters:
-        lighthouseResponse <str> String response in JSON format
-        functionNames <list> List of all the supported a11y functions
+        lighthouse_response <str> String response in JSON format
+        function_names <list> List of all the supported a11y functions
 
     Attributes:
-        lighthouseResponse <str> Where the string response is stored
+        lighthouse_response <str> Where the string response is stored
         auditData <dict> Maps audit data to appropriate AWE function
     """
 
-    def __init__(self, *, lighthouseResponse, functionNames):
-        self._lhResponse = json.loads(lighthouseResponse)
-        self._functions = functionNames
+    def __init__(self, *, lighthouse_response, function_names):
+        self._lhResponse = lighthouse_response
+        self._functions = function_names
         self._auditData = {}
 
     def _filter_response_for_accessibility(self):

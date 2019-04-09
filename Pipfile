@@ -8,6 +8,8 @@ verify_ssl = true
 [packages]
 flask = "*"
 bs4 = "*"
+requests = "*"
+pyppeteer = "*"
 wcag-contrast-ratio = "*"
 black = "*"
 
