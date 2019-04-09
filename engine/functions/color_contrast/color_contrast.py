@@ -29,7 +29,7 @@ def run(html):
     out = []
     for item in html:
         back = hex_to_rgb(item["colors"]["background"])
-        fore = hex_to_rgb(item["colors"]["foreground"])
+        fore = hex_to_rgb(item["colors"]["foreground"]) # Text color
 
         # True if the background is closer to white than black
         backLight = is_light(back)
@@ -45,6 +45,7 @@ def run(html):
             "notDarkest": all(fore) or not backLight,
         }
 
+        # Loop to adjust the foreground colors
         while all(cond.values()):
             fore = [
                 color
@@ -68,6 +69,7 @@ def run(html):
         cond["notLightest"] = max(back) < RGB_LIMIT or not backLight
         cond["notDarkest"] = all(back) or backLight
 
+        # Loop to adjust the background colors
         while all(cond.values()):
             back = [
                 color
@@ -91,14 +93,16 @@ def run(html):
         if not tag.has_attr("style"):
             tag["style"] = ""
 
-        # Remove "background-color" styles
-        if "background-color" in tag["style"]:
+        backChanged = rgb_to_hex(back) != item["colors"]["background"]
+
+        # Remove "background-color" styles if its color was changed
+        if backChanged and "background-color" in tag["style"]:
             start = tag["style"].find("background-color")
             end = tag["style"].find(";", start) + 1
             tag["style"] = tag["style"].replace(tag["style"][start:end], "")
 
-        # Remove "background" styles
-        if "background" in tag["style"]:
+        # Remove "background" styles if its color was changed
+        if backChanged and "background" in tag["style"]:
             start = tag["style"].find("background")
             end = tag["style"].find(";", start) + 1
             tag["style"] = tag["style"].replace(tag["style"][start:end], "")
@@ -110,7 +114,8 @@ def run(html):
             tag["style"] = tag["style"].replace(tag["style"][start:end], "")
 
         # Add the new calculated styles
-        tag["style"] += f"background: #{rgb_to_hex(back)}; color: #{rgb_to_hex(fore)};"
+        tag["style"] += f"color: #{rgb_to_hex(fore)}; "
+        tag["style"] += f"background: #{rgb_to_hex(back)}; " if backChanged else ""
         out.append(tag)
 
     return out
@@ -145,20 +150,19 @@ def is_light(RGB):
     """
     return RGB_LIMIT - max(RGB) < min(RGB)
 
-
 h = [
     {
-        "colors": {"background": "00a408", "foreground": "fffff8"},
+        "colors": {"background": "808080", "foreground": "808080"},
         "selector": "#signup-button",
         "snippet": """<a role="button" class="_5t3c _28le btn btnS medBtn mfsm touchable" id="signup-button" tabindex="0"
-    data-sigil="m_reg_button" data-autoid="autoid_3" style="background:#00a408; color:#fffff8;">Create New Account</a>""",
+    data-sigil="m_reg_button" data-autoid="autoid_3" style="color:#808080;">Create New Account</a>""",
     },
     {
-        "colors": {"background": "eceff8", "foreground": "7596c8"},
+        "colors": {"background": "808081", "foreground": "808081"},
         "selector": "#forgot-password-link",
         "snippet": """<a tabindex="0"
     href="/recover/initiate/?c=https%3A%2F%2Fm.facebook.com%2F%3Frefsrc%3Dhttps%253A%252F%252Fwww.facebook.com%252F&amp;r&amp;cuid&amp;ars=facebook_login&amp;lwv=100&amp;refid=8"
-    id="forgot-password-link" style="background:#eceff8; color:#7596c8;">Forgotten password?</a>""",
+    id="forgot-password-link" style=";">Forgotten password?</a>""",
     },
 ]
 
