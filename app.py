@@ -7,7 +7,7 @@ import asyncio
 
 app = Flask(__name__, static_folder="dist/static", template_folder="dist")
 
-ROOT_DIR = Path(os.environ.get("ROOT_DIR"))
+ROOT_DIR = Path(os.environ.get("ROOT_DIR") or Path.cwd())
 OUTPUT_DIR = Path(ROOT_DIR, "results/")
 
 
@@ -57,6 +57,7 @@ def crawl():
 
 
 @app.route("/", defaults={"path": ""})
+# @app.route("/<path:path>")
 def catch_all(path):
     if app.debug:
         return requests.get(f"http://localhost:8080/{path}").text
