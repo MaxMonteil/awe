@@ -40,14 +40,14 @@ class Engine:
             audit_format=audit_format,
         )
 
-    def run_analysis(self, force=False):
+    async def run_analysis(self, force=False):
         """
         Runs a lighthouse analysis on the site.
 
         Parameters:
             force <bool> Force a rerun of the analysis
         """
-        self._lighthouse.run(force)
+        await self._lighthouse.run(force)
 
     def get_full_audit_data(self):
         """Get the full parsed audit"""
