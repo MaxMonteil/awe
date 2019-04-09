@@ -29,7 +29,7 @@ def run(html):
     out = []
     for item in html:
         back = hex_to_rgb(item["colors"]["background"])
-        fore = hex_to_rgb(item["colors"]["foreground"]) # Text color
+        fore = hex_to_rgb(item["colors"]["foreground"])  # Text color
 
         # True if the background is closer to white than black
         backLight = is_light(back)
@@ -149,22 +149,3 @@ def is_light(RGB):
         <bool> whether the color is closer to white than black
     """
     return RGB_LIMIT - max(RGB) < min(RGB)
-
-h = [
-    {
-        "colors": {"background": "808080", "foreground": "808080"},
-        "selector": "#signup-button",
-        "snippet": """<a role="button" class="_5t3c _28le btn btnS medBtn mfsm touchable" id="signup-button" tabindex="0"
-    data-sigil="m_reg_button" data-autoid="autoid_3" style="color:#808080;">Create New Account</a>""",
-    },
-    {
-        "colors": {"background": "808081", "foreground": "808081"},
-        "selector": "#forgot-password-link",
-        "snippet": """<a tabindex="0"
-    href="/recover/initiate/?c=https%3A%2F%2Fm.facebook.com%2F%3Frefsrc%3Dhttps%253A%252F%252Fwww.facebook.com%252F&amp;r&amp;cuid&amp;ars=facebook_login&amp;lwv=100&amp;refid=8"
-    id="forgot-password-link" style=";">Forgotten password?</a>""",
-    },
-]
-
-for ht in run(h):
-    print(ht.prettify())
