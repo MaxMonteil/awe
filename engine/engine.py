@@ -69,7 +69,21 @@ class Engine:
         return self._crawler.get_raw_html()
 
     def run_engine(self):
-        return self._reassemble_site(asyncio.run(self._run_functions()))
+        """
+        Main Engine entry point.
+        Crawls the target site to get it's HTML, runs the Lighthouse Audit on the site,
+        and fixes the issues flagged by the audit.
+
+        Returns:
+            <BytesIO> the accessible version of the site
+        """
+        self._reassemble_site(asyncio.run(self._run_functions()))
+
+        # All offending tags will have now been replaced, save to bytes for transfer
+        byte_html = BytesIO()
+        byte_html.write(self._crawler.get_html_soup().encode())
+        byte_html.seek(0)
+        return byte_html
 
     async def _run_functions(self):
         """
@@ -107,21 +121,16 @@ class Engine:
 
         Parameters:
             function_results <list> Collection of the function result objects
-        Returns:
-            <BytesIO> the accessible version of the site
         """
-        site_html = self._crawler.get_html_soup()
         for result in function_results:
             # path is in the format "1,HTML,1,BODY,0,DIV,..."
             # we only need to keep the numbers (as integers)
             path_indices = [int(i) for i in result["path"].split(",")[::2]]
-            self._find_and_replace_tag(site_html, path_indices, result["snippet"])
-
-        # All offending tags will have now been replaced, save to bytes for transfer
-        byte_html = BytesIO()
-        byte_html.write(site_html.encode())
-        byte_html.seek(0)
-        return byte_html
+            self._find_and_replace_tag(
+                html=self._crawler.get_html_soup(),
+                full_path=path_indices,
+                snippet=result["snippet"],
+            )
 
     def _find_and_replace_tag(self, html, full_path, snippet):
         """
