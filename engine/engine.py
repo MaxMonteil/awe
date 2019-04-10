@@ -16,7 +16,6 @@ from . import constants
 from .crawler import Crawler
 from .functions import Caller
 from .lighthouse import Lighthouse
-from bs4 import BeautifulSoup
 import asyncio
 
 
@@ -69,7 +68,7 @@ class Engine:
         return self._crawler.get_raw_html()
 
     def run_engine(self):
-        self._reassemble_site(asyncio.run(self._run_functions()))
+        return self._reassemble_site(asyncio.run(self._run_functions()))
 
     async def _run_functions(self):
         """
@@ -101,13 +100,44 @@ class Engine:
                     )
                 )
 
-        return results
+        # Return the flattened result list
+        return [result for sublist in results for result in sublist]
 
     def _reassemble_site(self, function_results):
         """
-        Recombines the site's HTML into a more accessible version by replacing
+        Recombines the site's HTML into the  accessible version by replacing
         the offending code with the output of the corresponding AWE function.
+
+        Returns the result as a BytesIO object
         """
         site_html = self._crawler.get_html_soup()
         for result in function_results:
-            pass
+            # path is in the format "1,HTML,1,BODY,0,DIV,..."
+            # we only need to keep the numbers (as integers)
+            path_indices = [int(i) for i in result["path"].split(",")[::2]]
+            self._find_and_replace_tag(site_html, path_indices, result["snippet"])
+
+    def _find_and_replace_tag(self, html, full_path, snippet):
+        """
+        Tail recursive method that searches for the original snippet at 'full_path' and
+        replaces it with the fixed 'snippet'.
+
+        Parameters:
+            html <BeautifulSoup> The HTML of the full site
+            full_path <list> The list of integers that path the way to the original tag
+            snippet <BeautifulSoup> The fixed tag from the accessibility functions
+        """
+        # We add 1 to account for the behavior of contents but the first index which
+        # points to HTML is correct and always 1, so subtracting one makes it 0
+        full_path[0] = 0
+
+        def tag_finder(curr, path):
+            if path:
+                return tag_finder(
+                    # .contents also has newlines as children, this messes up indices
+                    curr=curr.contents[path[0] + 1],  # +1 to account for '\n'
+                    path=path[1:]
+                )
+            return curr
+
+        tag_finder(html, full_path).replace_with(snippet)
