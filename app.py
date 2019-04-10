@@ -56,6 +56,22 @@ def crawl():
     )
 
 
+@app.route("/api/run_engine")
+def awe():
+    target_url = request.args.get("url", default="", type=str)
+
+    engine = Engine(target_url=target_url)
+
+    return (
+        send_file(
+            engine.run_engine(),
+            as_attachment=True,
+            attachment_filename="awe_site.html"
+        ),
+        200,
+    )
+
+
 @app.route("/", defaults={"path": ""})
 # @app.route("/<path:path>")
 def catch_all(path):
