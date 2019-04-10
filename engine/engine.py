@@ -16,6 +16,7 @@ from . import constants
 from .crawler import Crawler
 from .functions import Caller
 from .lighthouse import Lighthouse
+from io import BytesIO
 import asyncio
 
 
@@ -76,14 +77,11 @@ class Engine:
         Accessibility functions receive a dictionary with keys:
         ["colors", "selector", "snippet", "path"]
 
-        The color key contains the foreground and background colors for the
-        color-contrast function only. Empty object for others.
-
-        selector is the css selector for the tag.
-
-        snippet is the failing HTML tag as a string.
-
-        path is the HTML tree path to the snippet
+        Keys:
+            "color"     foreground and background colors for the color_contrast funct
+            "selector"  css selector for the tag.
+            "snippet"   failing HTML tag as a string.
+            "path"      HTML tree path to the snippet
         """
         await asyncio.gather(self.run_analysis(), self.run_crawler())
         awe_caller = Caller()
@@ -95,8 +93,7 @@ class Engine:
             if functionData["failing"] and functionData["applicable"]:
                 results.append(
                     awe_caller.run(
-                        name=functionName,
-                        failingItems=functionData["items"],
+                        name=functionName, failingItems=functionData["items"]
                     )
                 )
 
@@ -108,7 +105,10 @@ class Engine:
         Recombines the site's HTML into the  accessible version by replacing
         the offending code with the output of the corresponding AWE function.
 
-        Returns the result as a BytesIO object
+        Parameters:
+            function_results <list> Collection of the function result objects
+        Returns:
+            <BytesIO> the accessible version of the site
         """
         site_html = self._crawler.get_html_soup()
         for result in function_results:
@@ -116,6 +116,12 @@ class Engine:
             # we only need to keep the numbers (as integers)
             path_indices = [int(i) for i in result["path"].split(",")[::2]]
             self._find_and_replace_tag(site_html, path_indices, result["snippet"])
+
+        # All offending tags will have now been replaced, save to bytes for transfer
+        byte_html = BytesIO()
+        byte_html.write(site_html.encode())
+        byte_html.seek(0)
+        return byte_html
 
     def _find_and_replace_tag(self, html, full_path, snippet):
         """
@@ -136,7 +142,7 @@ class Engine:
                 return tag_finder(
                     # .contents also has newlines as children, this messes up indices
                     curr=curr.contents[path[0] + 1],  # +1 to account for '\n'
-                    path=path[1:]
+                    path=path[1:],
                 )
             return curr
 

@@ -15,7 +15,6 @@ RGB_LIMIT = 255
 COLOR_STEP = 10
 
 
-
 def run(html):
     """
     Modifies the background and foreground color of text content and background
