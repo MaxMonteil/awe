@@ -25,7 +25,7 @@ def run(html):
         html <list> Dictionaries with HTML snippets as strings and hexadecimal
             color of the background and foreground
     Return:
-        <list> List of beautiful soup tags with proper CSS contrast elements
+        <list> List of beautiful soup tags with proper CSS contrast elements and their path
     """
     out = []
     for item in html:
@@ -117,7 +117,7 @@ def run(html):
         # Add the new calculated styles
         tag["style"] += f"color: #{rgb_to_hex(fore)}; "
         tag["style"] += f"background: #{rgb_to_hex(back)}; " if backChanged else ""
-        out.append(tag)
+        out.append({"path": item["path"], "snippet": tag})
 
     return out
 
