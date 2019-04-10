@@ -105,39 +105,47 @@ class Engine:
 
     def _reassemble_site(self, function_results):
         """
-        Recombines the site's HTML into the  accessible version by replacing
+        Recombines the site's HTML into a more accessible version by replacing
         the offending code with the output of the corresponding AWE function.
 
-        Returns the result as a BytesIO object
+        Parameters:
+            <list> of accessibility functions results as dictionaries
         """
         site_html = self._crawler.get_html_soup()
         for result in function_results:
+            result_soup = result["snippet"]
             # path is in the format "1,HTML,1,BODY,0,DIV,..."
             # we only need to keep the numbers (as integers)
-            path_indices = [int(i) for i in result["path"].split(",")[::2]]
-            self._find_and_replace_tag(site_html, path_indices, result["snippet"])
+            result_path = [int(i) for i in result["path"].split(",")[::2]]
+            self._reassemble_tag(result_soup, result_path, site_html)
 
-    def _find_and_replace_tag(self, html, full_path, snippet):
+    def _reassemble_tag(self, snippet, path, root_html):
         """
-        Tail recursive method that searches for the original snippet at 'full_path' and
-        replaces it with the fixed 'snippet'.
+        Places a function result into its correct original position
 
         Parameters:
-            html <BeautifulSoup> The HTML of the full site
-            full_path <list> The list of integers that path the way to the original tag
             snippet <BeautifulSoup> The fixed tag from the accessibility functions
+            path <list> The list of integers that path the way to the original tag
+            root_html <BeautifulSoup> The HTML of the full site
+        Return:
+            root_html <BeautifulSoup> The HTML of the full site. Used for recursion
+
         """
-        # We add 1 to account for the behavior of contents but the first index which
-        # points to HTML is correct and always 1, so subtracting one makes it 0
-        full_path[0] = 0
+        if len(path) == 0:
+            return snippet
+        else:
+            self._clean_soup_nl(root_html)
+            root_html.contents[path[0]] = self._reassemble_tag(snippet, path[1:], root_html.contents[path[0]])
+        return root_html
 
-        def tag_finder(curr, path):
-            if path:
-                return tag_finder(
-                    # .contents also has newlines as children, this messes up indices
-                    curr=curr.contents[path[0] + 1],  # +1 to account for '\n'
-                    path=path[1:]
-                )
-            return curr
+    
+    def _clean_soup_nl(self, root_html):
+        """
+        Removes all children beautiful soup items that only include a new line
 
-        tag_finder(html, full_path).replace_with(snippet)
+        Parameters:
+            root_html <BeautifulSoup> The root HTML node
+        """
+        for child in root_html.children:
+            if child == '\n':
+                child.extract()
