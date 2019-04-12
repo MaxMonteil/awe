@@ -64,9 +64,7 @@ def awe():
 
     return (
         send_file(
-            engine.run_engine(),
-            as_attachment=True,
-            attachment_filename="awe_site.html"
+            engine.run_engine(), as_attachment=True, attachment_filename="awe_site.html"
         ),
         200,
     )

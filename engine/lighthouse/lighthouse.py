@@ -28,6 +28,7 @@ class Lighthouse:
         score <int> Score given to the site by Lighthouse
         lighthouse_audit <BytesIO> File like object with full lighthouse audit
     """
+
     def __init__(self, *, function_names, target_url, audit_format="json"):
         self._function_names = function_names
         self._target_url = target_url
@@ -68,9 +69,7 @@ class Lighthouse:
         {self._target_url} {self._audit_format}"""
 
         proc = await asyncio.create_subprocess_shell(
-            command,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
+            command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
         )
 
         stdout, stderr = await proc.communicate()

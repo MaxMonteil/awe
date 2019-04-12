@@ -22,7 +22,7 @@ def run(html):
     # and the path to that tag
     out = []
     for i in range(len(htmlTags)):
-        out.append({"path":html[i]["path"],"snippet":htmlTags[i]})
+        out.append({"path": html[i]["path"], "snippet": htmlTags[i]})
     return out
 
 

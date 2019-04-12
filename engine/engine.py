@@ -115,7 +115,8 @@ class Engine:
         #         results.extend(Caller.run(name=name, failingItems=data))
 
         return (
-            result for name, data in self._lighthouse
+            result
+            for name, data in self._lighthouse
             for result in Caller.run(name=name, failingItems=data)
             if data["failing"] and data["applicable"]
         )
@@ -134,9 +135,7 @@ class Engine:
             snippet_path = [int(i) for i in result["path"].split(",")[::2]]
             # self._find_and_replace_tag(result["snippet"], snippet_path)
             self._reassemble_tag(
-                result["snippet"],
-                snippet_path,
-                self._crawler.html_soup,
+                result["snippet"], snippet_path, self._crawler.html_soup
             )
 
     # Another implemntation of the reassembler (see call on line 135)
@@ -163,8 +162,8 @@ class Engine:
             return snippet
         else:
             self._clean_soup_nl(root_html)
-            root_html.contents[path[0]] = (
-                self._reassemble_tag(snippet, path[1:], root_html.contents[path[0]])
+            root_html.contents[path[0]] = self._reassemble_tag(
+                snippet, path[1:], root_html.contents[path[0]]
             )
         return root_html
 
@@ -176,5 +175,5 @@ class Engine:
             root_html <BeautifulSoup> The root HTML node
         """
         for child in root_html.children:
-            if child == '\n':
+            if child == "\n":
                 child.extract()
