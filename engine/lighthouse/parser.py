@@ -1,7 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
-Parses and distributes a Lighthouse audit response to the proper AWE functions.
+Parses a JSON Lighthouse audit response keeping information relating to accessibility
+and organizing it according to AWE functions.
 """
 
 
@@ -14,17 +15,32 @@ class ResponseParser:
         lighthouse_response <str> String response in JSON format
         function_names <list> List of all the supported a11y functions
 
-    Attributes:
-        lighthouse_response <str> Where the string response is stored
-        auditData <dict> Maps audit data to appropriate AWE function
+    Properties:
+        audit <dict> Parsed response mapping data to appropriate AWE function
+        score <int> Score given to the site by Lighthouse
     """
 
     def __init__(self, *, lighthouse_response, function_names):
         self._lhResponse = lighthouse_response
         self._functions = function_names
-        self._auditData = {}
+        self._audit_data = None
+        self._audit_score = None
 
-    def _filter_response_for_accessibility(self):
+    def parse_audit_data(self, force=False):
+        """
+        Parses the lighthouse response file by calling the cleaning and
+        filtering methods on it.
+
+        Only needs to run once but it can be force to run again on the file.
+
+        Parameters:
+            force <bool> Default False. If True will parse audit again
+        """
+        if not self._audit_data or force:
+            filtered_response, self._audit_score = self._filter_for_accessibility()
+            self._audit_data = self._clean_response(filtered_response)
+
+    def _filter_for_accessibility(self):
         """
         Removes all data from lighthouse response that isn't about
         accessibility or about one of the AWE functions.
@@ -94,44 +110,30 @@ class ResponseParser:
         fore = explanation.find("#")
         # Hash was not found means that this wasn't the 'color-contrast' function
         if fore != -1:
-            fore = explanation[fore + 1 : fore + 7]
+            fore = explanation[fore + 1:fore + 7]
             back = explanation.rfind("#")
-            back = explanation[back + 1 : back + 7]
+            back = explanation[back + 1:back + 7]
 
             return {"foreground": fore, "background": back}
         else:
             return {}
 
-    def parse_audit_data(self, force=False):
-        """
-        Parses the lighthouse response file by calling the cleaning and
-        filtering methods on it.
+    @property
+    def audit(self):
+        return self._audit_data
 
-        Only needs to run once but it can be force to run again on the file.
+    @property
+    def score(self):
+        return self._audit_score
 
-        Parameters:
-            force <bool> Default False. If True will parse audit again
-        """
-        if not self._auditData or force:
-            filtered_response, score = self._filter_response_for_accessibility()
-            self._auditData = self._clean_response(filtered_response)
-            self._auditData["score"] = score
+    def __len__(self):
+        return len(self._audit_data)
 
-    def get_audit_data(self, functionName=None):
-        """
-        Getter method to access data related to AWE function.
+    def __getitem__(self, function_name):
+        if function_name not in self._audit_data:
+            raise KeyError
 
-        Parameters:
-            functionName <str> Name of the API function
+        return self._audit_data[function_name]
 
-        Return:
-            audit <dict> Function's audit data if functionName is valid
-                         If functionName is None returns all parsed data
-                         Otherwise returns an empty object
-        """
-        if functionName in self._auditData:
-            return self._auditData[functionName]
-        elif functionName is None:
-            return self._auditData
-        else:
-            return {}
+    def __iter__(self):
+        return iter(self._audit_data.items())
