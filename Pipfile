@@ -7,7 +7,14 @@ verify_ssl = true
 
 [packages]
 flask = "*"
-beautifulsoup4 = "*"
+bs4 = "*"
+requests = "*"
+pyppeteer = "*"
+wcag-contrast-ratio = "*"
+black = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true

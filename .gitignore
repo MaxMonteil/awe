@@ -25,7 +25,6 @@ src/.temp
 node_modules/
 
 # General
-dist/
 build/
 docs/_build/
 
@@ -65,3 +64,7 @@ _mailinglist
 result.html
 result.json
 testResults.json
+output.html
+output.txt
+package-lock.json
+results/*
