@@ -1,53 +1,53 @@
 # Takes list of img and return beautifulsoup objects
 from bs4 import BeautifulSoup
-import argparse
-import io
 
 from google.cloud import vision
 from google.cloud.vision import types
 
 
-def run(html):
-	 htmlTags = [BeautifulSoup(item["snippet"], "html.parser").find() for item in html]
-	 image(htmlTags)
+def run(failing_items):
+    paths = [item["path"] for item in failing_items]
+    tags = [BeautifulSoup(item["snippet"], "html.parser") for item in failing_items]
+
+    for tag in tags:
+        tag.img.set(
+            "alt",
+            _annotate_image(_analyze_image(tag.img.get("src"))),
+        )
+
+    return [
+        {
+            "snippet": snippet,
+            "path": path,
+        } for snippet, path in zip(tags, paths)
+    ]
 
 
-def image(htmlSnippets):
-	for tag in htmlSnippets:
-			image=tag.find('img')
-			src=tag.find('img').get('src')
-			alt=report(annotate(src))
-			image.set('alt',alt)
-
-def annotate(path):
+def _analyze_image(path):
     """Returns web annotations given the path to an image."""
     client = vision.ImageAnnotatorClient()
 
-    if path.startswith('http') or path.startswith('gs:'):
+    if path.startswith("http") or path.startswith("gs:"):
         image = types.Image()
         image.source.image_uri = path
-
     else:
-        with io.open(path, 'rb') as image_file:
+        with open(path, "rb") as image_file:
             content = image_file.read()
 
         image = types.Image(content=content)
 
-    web_detection = client.web_detection(image=image).web_detection
-
-    return web_detection
+    return client.web_detection(image=image).web_detection
 
 
-def report(annotations):
+def _annotate_image(annotations):
     """Prints detected features in the provided web annotations."""
-    alt=""
+    alt = ""
     if annotations.pages_with_matching_images:
         # print('\n{} Pages with matching images retrieved'.format(
         #     len(annotations.pages_with_matching_images)))
 
         for entity in annotations.web_entities:
-            alt+=entity.description+" "
+            alt += entity.description + " "
 
             # print('Description: {}'.format(entity.description))
     return alt
-
