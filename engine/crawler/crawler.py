@@ -20,9 +20,9 @@ class Crawler:
     Parameters:
         target_url <str> URL of the site to crawl
 
-    Attributes:
-        _raw_html <str> The raw scraped HTML of the site at target_url
-        _bs_html <BeautifulSoup> The parsed HTML of the site
+    Properties:
+        raw_html <str> Scraped HTML as a BytesIO file-like format for transfers
+        html_soup <BeautifulSoup> Parsed HTML of the site
     """
 
     def __init__(self, *, target_url):
@@ -52,10 +52,12 @@ class Crawler:
             self._bs_html = BeautifulSoup(content, "html.parser")
             await browser.close()
 
-    def get_raw_html(self):
-        """Get the raw string format of the scraped HTML."""
+    @property
+    def raw_html(self):
+        """Get the scraped HTML as a BytesIO file-like format for transfers."""
         return self._raw_html
 
-    def get_html_soup(self):
+    @property
+    def html_soup(self):
         """Get the BeautifulSoup parsed version of the HTML."""
         return self._bs_html
