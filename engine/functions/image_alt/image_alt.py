@@ -1,6 +1,9 @@
-# Takes list of img and return beautifulsoup objects
-from bs4 import BeautifulSoup
+"""
+Analyzes a list of image tags and returns them with an alt attribute describing the
+image's content.
+"""
 
+from bs4 import BeautifulSoup
 from google.cloud import vision
 from google.cloud.vision import types
 
@@ -10,17 +13,9 @@ def run(failing_items):
     tags = [BeautifulSoup(item["snippet"], "html.parser") for item in failing_items]
 
     for tag in tags:
-        tag.img.set(
-            "alt",
-            _annotate_image(_analyze_image(tag.img.get("src"))),
-        )
+        tag.img.set("alt", _annotate_image(_analyze_image(tag.img.get("src"))))
 
-    return [
-        {
-            "snippet": snippet,
-            "path": path,
-        } for snippet, path in zip(tags, paths)
-    ]
+    return [{"snippet": snippet, "path": path} for snippet, path in zip(tags, paths)]
 
 
 def _analyze_image(path):
