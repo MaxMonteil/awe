@@ -26,11 +26,11 @@ def get_analysis():
 
     print("Sending analysis")
     if output_format == "json":
-        return jsonify(engine.get_full_audit_data()), 200
+        return jsonify(engine.audit), 200
     else:
         return (
             send_file(
-                engine.get_full_audit_data(),
+                engine.audit,
                 as_attachment=True,
                 attachment_filename=f"awe_analysis.{output_format}",
             ),
@@ -48,7 +48,7 @@ def crawl():
 
     return (
         send_file(
-            engine.get_html(),
+            engine.site_html,
             as_attachment=True,
             attachment_filename="awe_site_crawl.html",
         ),
