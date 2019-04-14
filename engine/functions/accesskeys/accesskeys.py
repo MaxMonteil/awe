@@ -11,15 +11,19 @@ def run(html):
     empty. Normally a page shouldn't need that many acceskeys anyway.
 
     Parameters:
-        html <list> Dictionary with HTML snippets as strings
+        html <list> Dictionary with HTML snippets as strings and path as string
     Return:
         <list> List of beautiful soup tags with proper accesskey attributes
     """
     htmlTags = [BeautifulSoup(item["snippet"], "html.parser").find() for item in html]
-
     alphanum_keys = available_keys(htmlTags)
-
-    return add_keys(htmlTags, alphanum_keys)
+    htmlTags = add_keys(htmlTags, alphanum_keys)
+    # We need to return a list of fixed items with the BeautifulSoup fixed tag
+    # and the path to that tag
+    out = []
+    for i in range(len(htmlTags)):
+        out.append({"path": html[i]["path"], "snippet": htmlTags[i]})
+    return out
 
 
 def available_keys(htmlSnippets):
