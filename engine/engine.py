@@ -125,10 +125,7 @@ class Engine:
             function_results <list> Collection of the function result objects
         """
         for result in function_results:
-            # path is in the format "1,HTML,1,BODY,0,DIV,..."
-            # we only need to keep the numbers (as integers)
-            snippet_path = [int(i) for i in result["path"].split(",")[::2]]
-            self._find_and_replace_tag(result["snippet"], snippet_path)
+            self._find_and_replace_tag(result["snippet"], result["path"])
 
     def _find_and_replace_tag(self, snippet, snippet_path):
         curr_tag = self._crawler.html_soup

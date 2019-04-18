@@ -87,7 +87,9 @@ class ResponseParser:
                         "snippet": node["node"]["snippet"],
                         "selector": node["node"]["selector"],
                         "colors": self._extract_hex_codes(node["node"]["explanation"]),
-                        "path": node["node"]["path"],
+                        # path is in the format "1,HTML,1,BODY,0,DIV,..."
+                        # we only need to keep the numbers (as integers)
+                        "path": [int(i) for i in node["node"]["path"].split(",")[::2]],
                     }
                     for node in data["details"]["items"]
                 ],
@@ -110,9 +112,9 @@ class ResponseParser:
         fore = explanation.find("#")
         # Hash was not found means that this wasn't the 'color-contrast' function
         if fore != -1:
-            fore = explanation[fore + 1 : fore + 7]
+            fore = explanation[fore + 1: fore + 7]
             back = explanation.rfind("#")
-            back = explanation[back + 1 : back + 7]
+            back = explanation[back + 1: back + 7]
 
             return {"foreground": fore, "background": back}
         else:
