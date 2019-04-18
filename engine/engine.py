@@ -109,11 +109,6 @@ class Engine:
         """
         await asyncio.gather(self.run_analysis(), self.run_crawler())
 
-        # results = []
-        # for name, data in self._lighthouse:
-        #     if data["failing"] and data["applcable"]:
-        #         results.extend(Caller.run(name=name, failingItems=data))
-
         return (
             result
             for name, data in self._lighthouse
@@ -133,47 +128,12 @@ class Engine:
             # path is in the format "1,HTML,1,BODY,0,DIV,..."
             # we only need to keep the numbers (as integers)
             snippet_path = [int(i) for i in result["path"].split(",")[::2]]
-            # self._find_and_replace_tag(result["snippet"], snippet_path)
-            self._reassemble_tag(
-                result["snippet"], snippet_path, self._crawler.html_soup
-            )
+            self._find_and_replace_tag(result["snippet"], snippet_path)
 
-    # Another implemntation of the reassembler (see call on line 135)
-    # def _find_and_replace_tag(self, snippet, snippet_path):
-    #     curr_tag = self._crawler.html_soup
-    #     for i in snippet_path:
-    #         # get tag contents(children), filter out white-space, reassign from index
-    #         curr_tag = [tag for tag in curr_tag.contents if not str(tag).isspace()][i]
+    def _find_and_replace_tag(self, snippet, snippet_path):
+        curr_tag = self._crawler.html_soup
+        for i in snippet_path:
+            # get tag contents(children), filter out white-space, reassign from index
+            curr_tag = [tag for tag in curr_tag.contents if not str(tag).isspace()][i]
 
-    #     curr_tag.replace_with(snippet)
-
-    def _reassemble_tag(self, snippet, path, root_html):
-        """
-        Places a function result into its correct original position
-
-        Parameters:
-            snippet <BeautifulSoup> The fixed tag from the accessibility functions
-            path <list> The list of integers that path the way to the original tag
-            root_html <BeautifulSoup> The HTML of the full site
-        Return:
-            root_html <BeautifulSoup> The HTML of the full site. Used for recursion
-        """
-        if len(path) == 0:
-            return snippet
-        else:
-            self._clean_soup_nl(root_html)
-            root_html.contents[path[0]] = self._reassemble_tag(
-                snippet, path[1:], root_html.contents[path[0]]
-            )
-        return root_html
-
-    def _clean_soup_nl(self, root_html):
-        """
-        Removes all children beautiful soup items that only include a new line
-
-        Parameters:
-            root_html <BeautifulSoup> The root HTML node
-        """
-        for child in root_html.children:
-            if child == "\n":
-                child.extract()
+        curr_tag.replace_with(snippet)
