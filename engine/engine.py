@@ -124,6 +124,9 @@ class Engine:
         Parameters:
             function_results <list> Collection of the function result objects
         """
+        # KNOWN ISSUE
+        # If the same tag runs through multiple functions, only the latest is kept
+        # overwrting the previous changes
         for result in function_results:
             self._find_and_replace_tag(result["snippet"], result["path"])
 
