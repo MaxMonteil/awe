@@ -2,7 +2,8 @@
 
 """
 Parses a JSON Lighthouse audit response keeping information relating to accessibility
-and organizing it according to AWE functions.
+and organizing it according to AWE functions. It also offers the a list of failing tags
+with their function pipeline.
 """
 
 
@@ -17,85 +18,131 @@ class ResponseParser:
 
     Properties:
         audit <dict> Parsed response mapping data to appropriate AWE function
+        failing_tags <list> Tags with a list of their failing functions sorted by path
         score <int> Score given to the site by Lighthouse
     """
 
     def __init__(self, *, lighthouse_response, function_names):
-        self._lhResponse = lighthouse_response
+        self._lh_response = lighthouse_response
         self._functions = function_names
         self._audit_data = None
-        self._audit_score = None
+        self._lh_score = None
 
     def parse_audit_data(self, force=False):
         """
-        Parses the lighthouse response file by calling the cleaning and
-        filtering methods on it.
+        Parses the full lightouse response keeping only accessibility related
+        information and additional values needed by the Engine.
 
-        Only needs to run once but it can be force to run again on the file.
+        Only needs to run once but it can be force to run again on the audit.
 
         Parameters:
-            force <bool> Default False. If True will parse audit again
+            force <bool> Default False. If True will parse lighthouse audit again.
         """
         if not self._audit_data or force:
-            filtered_response, self._audit_score = self._filter_for_accessibility()
-            self._audit_data = self._clean_response(filtered_response)
+            self._lh_score = self._lh_response["categories"]["accessibility"]["score"]
+            self._audit_data = dict(
+                self._parse_lighthouse_response(self._lh_response, self._functions)
+            )
 
-    def _filter_for_accessibility(self):
+    @property
+    def audit(self):
+        return self._audit_data
+
+    @property
+    def failing_tags(self):
+        """Get the list of failing tags with their pipeline sorted by path length."""
+        try:
+            return self._pipeline_tags(
+                data["items"] for data in self._audit_data.values()
+            )
+        except AttributeError:
+            return None
+
+    @property
+    def score(self):
+        return self._lh_score
+
+    def _parse_lighthouse_response(self, lighthouse_response, functions):
         """
-        Removes all data from lighthouse response that isn't about
-        accessibility or about one of the AWE functions.
+        Keeps only accessibility related audit data as well as information about the
+        tags such as failing/applicable, and the description.
 
-        Return:
-            <dict> AWE function names mapped to lighthouse audit data
+        Yield:
+            <tuple>(<str>, <dict>)
+                Pair of function name and data
+                data:
+                    "failing"       <bool> Whether the tag is failing the a11y test
+                    "applicable"    <bool> Whether the a11y test is actually applicable
+                    "description"   <str> Lighthouse description of the function role
+                    "items"         <generator> Cleaned list of item dict
         """
-        # When a function is not applicable (eg: audio-caption on a page with no audio
-        # content) the node does not have a "details" key. This placeholder serves to
-        # give the node a default value while looping through them
-        placeholder = {"details": {"items": []}}
-
         # Keep all dict values relating to AWE functions and set the function
         # name as the key
-        filtered = {
-            function: dict(placeholder, **audit)
-            for (function, audit) in self._lhResponse["audits"].items()
-            if function in self._functions
-        }
+        for function_name, audit in lighthouse_response["audits"].items():
+            if function_name in functions:
+                yield (
+                    function_name,
+                    {
+                        # failing: the function was tested and it did not pass WCAG
+                        "failing": False if audit["score"] == 1 else True,
+                        # applicable: the function can't be tested
+                        "applicable": audit["score"] is not None,
+                        "description": audit["description"],
+                        "items": (
+                            self._parse_audit_items(
+                                audit.get("details", {}).get("items", []), function_name
+                            )
+                        ),
+                    },
+                )
 
-        score = self._lhResponse["categories"]["accessibility"]["score"]
-
-        return filtered, score
-
-    def _clean_response(self, filtered):
+    def _parse_audit_items(self, items, function_name):
         """
-        Cleans the filtered response from any unnecessary values.
+        Parses the list of the function's information for the function into the format
+        needed by the Engine and the accessibility functions.
 
         Parameters:
-            filtered <JSON> Filtered Lighthouse response
+            items <list> the Lighthouse information associated with the function
+            function_name <str> Name of the function whos data is being parsed
+
+        Yield:
+            <dict> Mapping of useful values from the filtered response
+        """
+        for item in items:
+            yield {
+                "snippet": item["node"]["snippet"],
+                "selector": item["node"]["selector"],
+                "colors": self._extract_hex_codes(item["node"]["explanation"]),
+                "pipeline": [function_name],
+                # path is in the format "1,HTML,1,BODY,0,DIV,..."
+                # we only need to keep the numbers (as integers)
+                "path": tuple(int(i) for i in item["node"]["path"].split(",")[::2]),
+            }
+
+    def _pipeline_function_data_seq(self, function_data_seq):
+        """
+        Reduces the function data into a list of objects with the pipeline of the
+        accessibility functions the tag needs to go through. It is sorted by path
+        length in order to replace parent tags before children tags.
+
+        Parameters:
+            function_data_seq <generator> Sequence of function's audit data
 
         Return:
-            cleaned <dict> Mapping of useful values from the filtered response
+            <list> list of function data unique by tags, sorted by path length
         """
-        # failing: the function was tested and it did not pass WCAG
-        # applicable: unknown if it passed or failed, the function can't be tested
-        return {
-            functionName: {
-                "failing": False if data["score"] == 1 else True,
-                "applicable": data["score"] is not None,
-                "description": data["description"],
-                "items": [
-                    {
-                        "snippet": node["node"]["snippet"],
-                        "selector": node["node"]["selector"],
-                        "colors": self._extract_hex_codes(node["node"]["explanation"]),
-                        # path is in the format "1,HTML,1,BODY,0,DIV,..."
-                        # we only need to keep the numbers (as integers)
-                        "path": [int(i) for i in node["node"]["path"].split(",")[::2]],
-                    }
-                    for node in data["details"]["items"]
-                ],
-            }
-            for (functionName, data) in filtered.items()
-        }
+        result = {}
+        for data in function_data_seq:
+            try:
+                result[data["path"]]["pipeline"].extend(data["pipeline"])
+            except KeyError:
+                result[data["path"]] = data
+            finally:
+                # keep the "colors" value of the snippets that fail color-contrast
+                if data["pipeline"][0] == "color-contrast":
+                    result[data["path"]]["colors"] = data["colors"]
+
+        return sorted(result.values(), key=lambda value: len(value["path"]))
 
     def _extract_hex_codes(self, explanation):
         """
@@ -119,14 +166,6 @@ class ResponseParser:
             return {"foreground": fore, "background": back}
         else:
             return {}
-
-    @property
-    def audit(self):
-        return self._audit_data
-
-    @property
-    def score(self):
-        return self._audit_score
 
     def __len__(self):
         return len(self._audit_data)
