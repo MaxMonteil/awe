@@ -34,10 +34,6 @@ This project aims to make the internet more accessible through our Accessibility
 
 ## Getting Started
 
-### Prerequisites
-
-You will need to have a [Google Cloud Platform](https://cloud.google.com/) instance.
-
 Make sure you also have [pipenv](https://pipenv.readthedocs.io) installed on your machine in order to easily set up the environment.
 
 ### Installing
@@ -46,10 +42,12 @@ Make sure you also have [pipenv](https://pipenv.readthedocs.io) installed on you
 git clone git@github.com:MaxMonteil/awe.git
 cd awe
 pipenv install
-
-# to install the website dependencies
-cd site
-npm install
 ```
+
+Next create a copy of the `env` file called `.env` (note the dot) and add in the absolute path to the root directory of awe.
+
+ex: `/home/<username/awe`
+
+The first time you run the engine it will install a local version of chromium to the share folder. If you would rather use another build make sure to change the variables in your .env file.
 
 ## Built With
