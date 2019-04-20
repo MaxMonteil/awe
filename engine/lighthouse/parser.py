@@ -52,8 +52,8 @@ class ResponseParser:
     def failing_tags(self):
         """Get the list of failing tags with their pipeline sorted by path length."""
         try:
-            return self._pipeline_tags(
-                data["items"] for data in self._audit_data.values()
+            return self._pipeline_function_data(
+                item for data in self._audit_data.values() for item in data["items"]
             )
         except AttributeError:
             return None
@@ -88,7 +88,7 @@ class ResponseParser:
                         # applicable: the function can't be tested
                         "applicable": audit["score"] is not None,
                         "description": audit["description"],
-                        "items": (
+                        "items": list(
                             self._parse_audit_items(
                                 audit.get("details", {}).get("items", []), function_name
                             )
@@ -119,7 +119,7 @@ class ResponseParser:
                 "path": tuple(int(i) for i in item["node"]["path"].split(",")[::2]),
             }
 
-    def _pipeline_function_data_seq(self, function_data_seq):
+    def _pipeline_function_data(self, function_data_seq):
         """
         Reduces the function data into a list of objects with the pipeline of the
         accessibility functions the tag needs to go through. It is sorted by path
@@ -175,6 +175,9 @@ class ResponseParser:
             raise KeyError
 
         return self._audit_data[function_name]
+
+    def __contains__(self, key):
+        return key in self._audit_data
 
     def __iter__(self):
         return iter(self._audit_data.items())
