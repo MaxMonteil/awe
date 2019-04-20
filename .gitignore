@@ -36,7 +36,6 @@ htmlcov/
 
 # local env files
 env/
-env*
 .env
 .env.*
 .flaskenv
