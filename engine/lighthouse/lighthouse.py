@@ -2,6 +2,7 @@
 
 from .parser import ResponseParser
 from io import BytesIO
+import os
 import asyncio
 import json
 
@@ -42,31 +43,33 @@ class Lighthouse:
         if self._audit_format == "json":
             self._run_parser(force)
 
-    # Non async version just in case
-    # def _run_lighthouse_audit(self):
-    #     completed_process = subprocess.run(
-    #        [
-    #            "bash",
-    #            "./engine/lighthouse/run_lighthouse.sh",
-    #            self._target_url,
-    #            self._audit_format,
-    #        ],
-    #        capture_output=True,  # Avoid creating a file, keep it in memory
-    #     )
+    @property
+    def audit(self):
+        """Parsed JSON lighthouse audit."""
+        return json.dumps(self._parser.audit)
 
-    #     if self._audit_format == "json":
-    #         return json.loads(completed_process.stdout)
-    #     else:
-    #         # save the bytestring output as a file-like object for transfers
-    #         s = BytesIO()
-    #         s.write(completed_process.stdout)
-    #         s.seek(0)
-    #         return s
+    @property
+    def failing_tags(self):
+        """Get the list of failing tags with their pipeline sorted by path length."""
+        return self._parser.failing_tags
+
+    @property
+    def score(self):
+        """Lighthouse audit score of the site."""
+        return self._parser.score
+
+    @property
+    def lighthouse_audit(self):
+        """Returns lighthouse audit as a file-like object for transfers."""
+        f = BytesIO()
+        f.write(self._lighthouse_response)
+        f.seek(0)
+        return f
 
     async def _run_lighthouse_audit(self):
         """Run lighthouse audit on the target site."""
         command = f"""bash ./engine/lighthouse/run_lighthouse.sh \
-        {self._target_url} {self._audit_format}"""
+        {self._target_url} {self._audit_format} {os.environ.get("CHROME_PATH")}"""
 
         proc = await asyncio.create_subprocess_shell(
             command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
@@ -89,24 +92,6 @@ class Lighthouse:
             )
         self._parser.parse_audit_data(force)
 
-    @property
-    def audit(self):
-        """Parsed JSON lighthouse audit."""
-        return json.dumps(self._parser.audit)
-
-    @property
-    def score(self):
-        """Lighthouse audit score of the site."""
-        return self._parser.score
-
-    @property
-    def lighthouse_audit(self):
-        """Returns lighthouse audit as a file-like object for transfers."""
-        f = BytesIO()
-        f.write(self._lighthouse_response)
-        f.seek(0)
-        return f
-
     def __len__(self):
         return len(self._parser)
 
@@ -116,5 +101,8 @@ class Lighthouse:
 
         return self._parser[key]
 
+    def __contains__(self, key):
+        return key in self._parser
+
     def __iter__(self):
-        return iter(self._parse)
+        return iter(self._parser)
