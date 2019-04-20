@@ -69,3 +69,4 @@ output.html
 output.txt
 package-lock.json
 results/*
+share/
