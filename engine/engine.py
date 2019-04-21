@@ -87,15 +87,16 @@ class Engine:
         Returns:
             <BytesIO> the accessible version of the site
         """
-        self._reassemble_site(asyncio.run(self._run_functions()))
+        fixed_tags = asyncio.run(self._run_functions(self._lighthouse.failing_tags))
+        self._reassemble_site(fixed_tags)
 
         # All offending tags will have now been replaced, save to bytes for transfer
         byte_html = BytesIO()
         byte_html.write(self._crawler.html_soup.encode())
         byte_html.seek(0)
-        return byte_html
+        return byte_html.getvalue()
 
-    async def _run_functions(self):
+    async def _run_functions(self, failing_tags):
         """
         Organizes function calls sending them the proper HTML and Audit data.
         Accessibility functions receive a dictionary with keys:
@@ -103,20 +104,19 @@ class Engine:
 
         Function data keys:
             "color"     foreground and background colors for the color_contrast funct
-            "selector"  css selector for the tag.
-            "snippet"   failing HTML tag as a string.
+            "selector"  css selector for the tag
+            "snippet"   failing HTML tag as a string
             "path"      HTML tree path to the snippet
+            "pipeline"  List of the functions the snippet needs to go through
         """
         await asyncio.gather(self.run_analysis(), self.run_crawler())
 
         return (
-            result
-            for name, data in self._lighthouse
-            for result in Caller.run(name=name, failingItems=data)
-            if data["failing"] and data["applicable"]
+            {"snippet": Caller.run_pipeline(tag), "path": tag["path"]}
+            for tag in failing_tags
         )
 
-    def _reassemble_site(self, function_results):
+    def _reassemble_site(self, fixed_tags):
         """
         Recombines the site's HTML into a more accessible version by replacing
         the offending code with the output of the corresponding AWE function.
@@ -124,15 +124,15 @@ class Engine:
         Parameters:
             function_results <list> Collection of the function result objects
         """
-        # KNOWN ISSUE
-        # If the same tag runs through multiple functions, only the latest is kept
-        # overwrting the previous changes
-        for result in function_results:
-            self._find_and_replace_tag(result["snippet"], result["path"])
+        for tag in fixed_tags:
+            self._find_and_replace_snippet(tag["snippet"], tag["path"])
 
-    def _find_and_replace_tag(self, snippet, snippet_path):
+    def _find_and_replace_snippet(self, snippet, path):
+        """
+        Navigates the HTML tree down to the tag and replaces it with the fixed snippet.
+        """
         curr_tag = self._crawler.html_soup
-        for i in snippet_path:
+        for i in path:
             # get tag contents(children), filter out white-space, reassign from index
             curr_tag = [tag for tag in curr_tag.contents if not str(tag).isspace()][i]
 
