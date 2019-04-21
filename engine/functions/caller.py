@@ -88,13 +88,30 @@ class Caller:
         "video_description": video_description,
     }
 
-    def run(self, *, name, failingItems):
+    def run_pipeline(self, tag):
         """
-        Main method to call each helper function. Just pass the function name
-        and any arguments (positional or keyword).
+        Main method to run each tag through its pipeline.
 
         Parameters:
-            name <str> Name of the function to run
-            failingItems <list> Elements that fail 'name' function tests
+            tag <dict> Contains the HTML snippet along with a str list of its pipeline
+
+        Return:
+            <dict> The same tag but with the snippet fixed
         """
-        return self.functions[name].run(failingItems)
+        return self._compose_pipeline(tag["pipeline"])(tag)
+
+    def _compose_pipeline(self, pipeline):
+        """
+        Changes the str list of function names into curried pipeline function
+        ['a', 'b', 'c'] -> a.run(b.run(c.run(x)))
+
+        Parameters:
+            pipeline <list> List of the function names the snippet must go through
+
+        Return:
+            <function> Curried pipelined function calls the snippet will go through
+        """
+        if len(pipeline) == 1:
+            return lambda x: self.functions[pipeline[0]].run(x)
+
+        return self.functions[pipeline[0]].run(self._compose_pipeline(pipeline[1:]))
