@@ -43,17 +43,30 @@ You will also need to have Node 10.13+ installed in order to be able to run ligh
 ### Installing
 
 ```
-git clone git@github.com:MaxMonteil/awe.git
-cd awe
+git clone git@github.com:MaxMonteil/awe.git && cd awe
+mv env .env && echo "ROOT_DIR=$PWD" >> .env
 pipenv install
 npm install -g lighthouse
+pipenv run pyppeteer-install
 ```
+
+The first line clones the project to your machine and moves you into the folder.
+
+The second line will create the environment variables file specific to your setup using the `env` file as a template. The part after the `&&` will add the `ROOT_DIR` variable to the environment which is the absolute path to the awe directory.
+
+*If you are on Windows this line might not work, just rename the *`env`* file to *`.env`* and add a line like this 'ROOT_DIR=\Path\to\the\awe\folder'*
+
+The third line runs pipenv which will read the Pipfile and create the python virtual environment.
+
+Finally npm will install lighthouse.
+
+**The last line is optional.**
+Run it if you want to install Google Chrome for the project right now, otherwise pyppeteer will do it itself the first time it is run.
+
 
 Next create a copy of the `env` file called `.env` (note the dot) and add in the absolute path to the root directory of awe.
 
 ex: `/home/<username/awe`
-
-The first time you run the engine it will install a local version of chromium to the share folder. If you would rather use another build make sure to change the variables in your .env file.
 
 ## Built With
 
