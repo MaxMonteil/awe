@@ -100,7 +100,7 @@ class Caller:
         """
         return self._compose_pipeline(tag["pipeline"])(tag)
 
-    def _compose_pipeline(self, pipeline):
+    def _compose_pipeline(self, function_names):
         """
         Changes the str list of function names into curried pipeline function
         ['a', 'b', 'c'] -> a.run(b.run(c.run(x)))
@@ -111,7 +111,11 @@ class Caller:
         Return:
             <function> Curried pipelined function calls the snippet will go through
         """
-        if len(pipeline) == 1:
-            return lambda x: self.functions[pipeline[0]].run(x)
+        function_list = tuple(self.functions[name] for name in function_names)
 
-        return self.functions[pipeline[0]].run(self._compose_pipeline(pipeline[1:]))
+        def compose(acc, x, function_list):
+            if not function_list:
+                return acc.run(x)
+            return acc.run(compose(function_list[0], x, function_list[1:]))
+
+        return lambda x: compose(function_list[0], x, function_list[1:])
