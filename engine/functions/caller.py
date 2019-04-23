@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-Helper module to manage imports of awe functions.
+Helper module to manage imports of awe function and their pipelined calls.
 """
 
 from engine.functions.accesskeys import accesskeys
