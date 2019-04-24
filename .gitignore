@@ -6,6 +6,7 @@
 *.njsproj
 *.sln
 *.sw*
+tags
 
 # Python
 venv/
