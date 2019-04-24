@@ -14,7 +14,7 @@ target site.
 
 from . import constants
 from .crawler import Crawler
-from .functions import caller
+from .functions import caller as Caller
 from .lighthouse import Lighthouse
 from io import BytesIO
 import asyncio
@@ -112,7 +112,7 @@ class Engine:
         await asyncio.gather(self.run_analysis(), self.run_crawler())
 
         return (
-            {"snippet": caller.run_pipeline(tag), "path": tag["path"]}
+            {"snippet": Caller.run_pipeline(tag), "path": tag["path"]}
             for tag in failing_tags
         )
 
