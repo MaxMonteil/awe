@@ -33,73 +33,66 @@ from engine.functions.video_caption import video_caption
 from engine.functions.video_description import video_description
 
 
-class Caller:
+functions_mapping = {
+    "accesskeys": accesskeys,
+    "audio_caption": audio_caption,
+    "button_name": button_name,
+    "bypass": bypass,
+    "color_contrast": color_contrast,
+    "definition_list": definition_list,
+    "dlitem": dlitem,
+    "document_title": document_title,
+    "duplicate_id": duplicate_id,
+    "frame_title": frame_title,
+    "html_lang": html_lang,
+    "html_lang_valid": html_lang_valid,
+    "image_alt": image_alt,
+    "input_image_alt": input_image_alt,
+    "label": label,
+    "layout_table": layout_table,
+    "link_name": link_name,
+    "list_item": list_item,
+    "meta_refresh": meta_refresh,
+    "meta_viewport": meta_viewport,
+    "object_alt": object_alt,
+    "tab_index": tab_index,
+    "td_headers_attr": td_headers_attr,
+    "th_data_cells": th_data_cells,
+    "valid_lang": valid_lang,
+    "video_caption": video_caption,
+    "video_description": video_description,
+}
+
+
+def run_pipeline(tag):
     """
-    Caller is a helper class meant to offer a single entry point to call all
-    awe functions.
+    Main method to run each tag through its pipeline.
 
-    Attributes:
-        functions <dict> Mapping of string function name to imported function
+    Parameters:
+        tag <dict> Contains the HTML snippet along with a str list of its pipeline
+
+    Return:
+        <dict> The same tag but with the snippet fixed
     """
+    return _compose_pipeline(tag["pipeline"])(tag)
 
-    functions = {
-        "accesskeys": accesskeys,
-        "audio_caption": audio_caption,
-        "button_name": button_name,
-        "bypass": bypass,
-        "color_contrast": color_contrast,
-        "definition_list": definition_list,
-        "dlitem": dlitem,
-        "document_title": document_title,
-        "duplicate_id": duplicate_id,
-        "frame_title": frame_title,
-        "html_lang": html_lang,
-        "html_lang_valid": html_lang_valid,
-        "image_alt": image_alt,
-        "input_image_alt": input_image_alt,
-        "label": label,
-        "layout_table": layout_table,
-        "link_name": link_name,
-        "list_item": list_item,
-        "meta_refresh": meta_refresh,
-        "meta_viewport": meta_viewport,
-        "object_alt": object_alt,
-        "tab_index": tab_index,
-        "td_headers_attr": td_headers_attr,
-        "th_data_cells": th_data_cells,
-        "valid_lang": valid_lang,
-        "video_caption": video_caption,
-        "video_description": video_description,
-    }
 
-    def run_pipeline(self, tag):
-        """
-        Main method to run each tag through its pipeline.
+def _compose_pipeline(function_names):
+    """
+    Changes the str list of function names into curried pipeline function
+    ['a', 'b', 'c'] -> a.run(b.run(c.run(x)))
 
-        Parameters:
-            tag <dict> Contains the HTML snippet along with a str list of its pipeline
+    Parameters:
+        pipeline <list> List of the function names the snippet must go through
 
-        Return:
-            <dict> The same tag but with the snippet fixed
-        """
-        return self._compose_pipeline(tag["pipeline"])(tag)
+    Return:
+        <function> Curried pipelined function calls the snippet will go through
+    """
+    function_list = tuple(functions_mapping[name] for name in function_names)
 
-    def _compose_pipeline(self, function_names):
-        """
-        Changes the str list of function names into curried pipeline function
-        ['a', 'b', 'c'] -> a.run(b.run(c.run(x)))
+    def compose(acc, x, function_list):
+        if not function_list:
+            return acc.run(x)
+        return acc.run(compose(function_list[0], x, function_list[1:]))
 
-        Parameters:
-            pipeline <list> List of the function names the snippet must go through
-
-        Return:
-            <function> Curried pipelined function calls the snippet will go through
-        """
-        function_list = tuple(self.functions[name] for name in function_names)
-
-        def compose(acc, x, function_list):
-            if not function_list:
-                return acc.run(x)
-            return acc.run(compose(function_list[0], x, function_list[1:]))
-
-        return lambda x: compose(function_list[0], x, function_list[1:])
+    return lambda x: compose(function_list[0], x, function_list[1:])
