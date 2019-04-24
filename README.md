@@ -28,7 +28,7 @@ This project aims to make the internet more accessible through our Accessibility
 * [Hussein Murtada](https://github.com/husseinmur)
 * [Maria Daou](https://github.com/mariadaou)
 * [Marina Kayrouz](https://github.com/MarinaKeyrouz)
-* [Maxime Hermez](https://github.com/MaxHermez)
+* [Maxim Hermez](https://github.com/MaxHermez)
 * [Maximilien Monteil](https://github.com/MaxMonteil)
 * [Waseem Elghali](https://github.com/Sauronsring)
 
