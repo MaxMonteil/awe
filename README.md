@@ -44,7 +44,7 @@ You will also need to have Node 10.13+ installed in order to be able to run ligh
 
 ```
 git clone git@github.com:MaxMonteil/awe.git && cd awe
-mv env .env && echo "ROOT_DIR=$PWD" >> .env
+cp env .env && echo "ROOT_DIR=$PWD" >> .env
 pipenv install
 npm install -g lighthouse
 pipenv run pyppeteer-install
