@@ -14,7 +14,7 @@ target site.
 
 from . import constants
 from .crawler import Crawler
-from .functions import Caller
+from .functions import caller as Caller
 from .lighthouse import Lighthouse
 from io import BytesIO
 import asyncio
@@ -87,15 +87,16 @@ class Engine:
         Returns:
             <BytesIO> the accessible version of the site
         """
-        self._reassemble_site(asyncio.run(self._run_functions()))
+        fixed_tags = asyncio.run(self._run_functions(self._lighthouse.failing_tags))
+        self._reassemble_site(fixed_tags)
 
         # All offending tags will have now been replaced, save to bytes for transfer
         byte_html = BytesIO()
         byte_html.write(self._crawler.html_soup.encode())
         byte_html.seek(0)
-        return byte_html
+        return byte_html.getvalue()
 
-    async def _run_functions(self):
+    async def _run_functions(self, failing_tags):
         """
         Organizes function calls sending them the proper HTML and Audit data.
         Accessibility functions receive a dictionary with keys:
@@ -103,25 +104,19 @@ class Engine:
 
         Function data keys:
             "color"     foreground and background colors for the color_contrast funct
-            "selector"  css selector for the tag.
-            "snippet"   failing HTML tag as a string.
+            "selector"  css selector for the tag
+            "snippet"   failing HTML tag as a string
             "path"      HTML tree path to the snippet
+            "pipeline"  List of the functions the snippet needs to go through
         """
         await asyncio.gather(self.run_analysis(), self.run_crawler())
 
-        # results = []
-        # for name, data in self._lighthouse:
-        #     if data["failing"] and data["applcable"]:
-        #         results.extend(Caller.run(name=name, failingItems=data))
-
         return (
-            result
-            for name, data in self._lighthouse
-            for result in Caller.run(name=name, failingItems=data)
-            if data["failing"] and data["applicable"]
+            {"snippet": Caller.run_pipeline(tag), "path": tag["path"]}
+            for tag in failing_tags
         )
 
-    def _reassemble_site(self, function_results):
+    def _reassemble_site(self, fixed_tags):
         """
         Recombines the site's HTML into a more accessible version by replacing
         the offending code with the output of the corresponding AWE function.
@@ -129,51 +124,16 @@ class Engine:
         Parameters:
             function_results <list> Collection of the function result objects
         """
-        for result in function_results:
-            # path is in the format "1,HTML,1,BODY,0,DIV,..."
-            # we only need to keep the numbers (as integers)
-            snippet_path = [int(i) for i in result["path"].split(",")[::2]]
-            # self._find_and_replace_tag(result["snippet"], snippet_path)
-            self._reassemble_tag(
-                result["snippet"], snippet_path, self._crawler.html_soup
-            )
+        for tag in fixed_tags:
+            self._find_and_replace_snippet(tag["snippet"], tag["path"])
 
-    # Another implemntation of the reassembler (see call on line 135)
-    # def _find_and_replace_tag(self, snippet, snippet_path):
-    #     curr_tag = self._crawler.html_soup
-    #     for i in snippet_path:
-    #         # get tag contents(children), filter out white-space, reassign from index
-    #         curr_tag = [tag for tag in curr_tag.contents if not str(tag).isspace()][i]
-
-    #     curr_tag.replace_with(snippet)
-
-    def _reassemble_tag(self, snippet, path, root_html):
+    def _find_and_replace_snippet(self, snippet, path):
         """
-        Places a function result into its correct original position
-
-        Parameters:
-            snippet <BeautifulSoup> The fixed tag from the accessibility functions
-            path <list> The list of integers that path the way to the original tag
-            root_html <BeautifulSoup> The HTML of the full site
-        Return:
-            root_html <BeautifulSoup> The HTML of the full site. Used for recursion
+        Navigates the HTML tree down to the tag and replaces it with the fixed snippet.
         """
-        if len(path) == 0:
-            return snippet
-        else:
-            self._clean_soup_nl(root_html)
-            root_html.contents[path[0]] = self._reassemble_tag(
-                snippet, path[1:], root_html.contents[path[0]]
-            )
-        return root_html
+        curr_tag = self._crawler.html_soup
+        for i in path:
+            # get tag contents(children), filter out white-space, reassign from index
+            curr_tag = [tag for tag in curr_tag.contents if not str(tag).isspace()][i]
 
-    def _clean_soup_nl(self, root_html):
-        """
-        Removes all children beautiful soup items that only include a new line
-
-        Parameters:
-            root_html <BeautifulSoup> The root HTML node
-        """
-        for child in root_html.children:
-            if child == "\n":
-                child.extract()
+        curr_tag.replace_with(snippet)

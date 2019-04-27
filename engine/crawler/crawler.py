@@ -55,7 +55,7 @@ class Crawler:
     @property
     def raw_html(self):
         """Get the scraped HTML as a BytesIO file-like format for transfers."""
-        return self._raw_html
+        return self._raw_html.getvalue()
 
     @property
     def html_soup(self):
