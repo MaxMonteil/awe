@@ -47,6 +47,8 @@ class Engine:
             audit_format=audit_format,
         )
 
+        self._accessible_site = None
+
     async def run_analysis(self, force=False):
         """
         Runs a lighthouse analysis on the site.
@@ -94,7 +96,12 @@ class Engine:
         byte_html = BytesIO()
         byte_html.write(self._crawler.html_soup.encode())
         byte_html.seek(0)
-        return byte_html.getvalue()
+        self._accessible_site = byte_html
+
+    @property
+    def accessible_site(self):
+        return self._accessible_site
+
 
     async def _run_functions(self, failing_tags):
         """
