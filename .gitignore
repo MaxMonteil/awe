@@ -6,6 +6,7 @@
 *.njsproj
 *.sln
 *.sw*
+tags
 
 # Python
 venv/
@@ -25,7 +26,6 @@ src/.temp
 node_modules/
 
 # General
-dist/
 build/
 docs/_build/
 
@@ -37,7 +37,6 @@ htmlcov/
 
 # local env files
 env/
-env*
 .env
 .env.*
 .flaskenv
@@ -60,8 +59,14 @@ keys/
 .cache
 .tox/
 _mailinglist
+tags
 
 # Project Specific
 result.html
 result.json
 testResults.json
+output.html
+output.txt
+package-lock.json
+results/*
+share/

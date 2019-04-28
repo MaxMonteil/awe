@@ -1,40 +1,82 @@
-from awe import Engine
-from flask import Flask, request, send_file, jsonify
-import subprocess
+from engine import Engine
+from flask import Flask, request, send_file, jsonify, render_template
+from pathlib import Path
+import os
+import requests
+import asyncio
 
-app = Flask(__name__)
-ROOT_DIR = "/var/www/awe/"
-OUTPUT_DIR = ROOT_DIR + "/results/"
+app = Flask(__name__, static_folder="dist/static", template_folder="dist")
+
+ROOT_DIR = Path(os.environ.get("ROOT_DIR") or Path.cwd())
+OUTPUT_DIR = Path(ROOT_DIR, "results/")
 
 
-@app.route("/api/")
-def getUrl():
+@app.route("/api/analyze")
+def get_analysis():
     target_url = request.args.get("url", default="", type=str)
     output_format = request.args.get("output", default="json", type=str)
 
     # Ensure a valid format is given if not, defaults to json
-    if output_format not in ["html", "json"]:
+    if output_format not in ("html", "json"):
         output_format = "json"
 
-    OUTPUT_FILE = OUTPUT_DIR + output_format
+    print("Calling lighthouse")
+    engine = Engine(target_url=target_url)
+    asyncio.run(engine.run_analysis())
 
-    subprocess.call(
-        ["sudo", "bash", f"{ROOT_DIR}run.sh", target_url, output_format],
-        bufsize=0,
+    print("Sending analysis")
+    if output_format == "json":
+        return jsonify(engine.audit), 200
+    else:
+        return (
+            send_file(
+                engine.audit,
+                as_attachment=True,
+                attachment_filename=f"awe_analysis.{output_format}",
+            ),
+            200,
+        )
+
+
+@app.route("/api/crawl")
+def crawl():
+    target_url = request.args.get("url", default="", type=str)
+
+    print("Calling crawler")
+    engine = Engine(target_url=target_url)
+    asyncio.run(engine.run_crawler())
+
+    return (
+        send_file(
+            engine.site_html,
+            as_attachment=True,
+            attachment_filename="awe_site_crawl.html",
+        ),
+        200,
     )
 
-    if output_format is "html":
-        return send_file(OUTPUT_FILE)
 
-    audit = ""
-    with open(OUTPUT_FILE, "r") as auditFile:
-        audit = auditFile.read()
+@app.route("/api/run_engine")
+def awe():
+    target_url = request.args.get("url", default="", type=str)
 
-    engine = Engine(audit_data=audit)
+    engine = Engine(target_url=target_url)
 
-    return jsonify(engine.lhAudit.get_audit_data()), 200
+    return (
+        send_file(
+            engine.run_engine(), as_attachment=True, attachment_filename="awe_site.html"
+        ),
+        200,
+    )
 
 
-@app.route("/")
-def hello():
-    return "Hello from AWE!"
+@app.route("/", defaults={"path": ""})
+# @app.route("/<path:path>")
+def catch_all(path):
+    if app.debug:
+        return requests.get(f"http://localhost:8080/{path}").text
+    return render_template("index.html")
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
