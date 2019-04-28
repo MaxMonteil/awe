@@ -39,7 +39,11 @@ class Crawler:
             force <bool> Whether to force a recrawl or not. Defaults to False.
         """
         if self._raw_html is None or self._bs_html is None or force:
-            browser = await launch()
+            browser = await launch(
+                handleSIGINT=False,
+                handleSIGTERM=False,
+                handleSIGHUP=False,
+            )
             page = await browser.newPage()
             await page.goto(self._target_url)
             content = await page.content()
@@ -55,7 +59,7 @@ class Crawler:
     @property
     def raw_html(self):
         """Get the scraped HTML as a BytesIO file-like format for transfers."""
-        return self._raw_html.getvalue()
+        return self._raw_html
 
     @property
     def html_soup(self):
