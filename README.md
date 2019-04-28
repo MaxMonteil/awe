@@ -68,6 +68,32 @@ Next create a copy of the `env` file called `.env` (note the dot) and add in the
 
 ex: `/home/<username/awe`
 
+#### Chrome Errors
+
+If you get an error from chrome about there not being a usable sandbox try running this
+command:
+
+```
+sudo sysctl -w kernel.unprivileged_userns_clone=1
+```
+
+It comes from this link:
+[Puppeteer on Github](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#setting-up-chrome-linux-sandbox)
+
+### Running AWE
+
+If running on the Google Cloud instance make sure to set the environment variable `ON_GCP` to true, this enables running the engine with 
+
+```
+pipenv run python app.py
+```
+
+To run the recommended way with flask change the host and port to what you need in then `.env` file, also make sure to run with the `--no-reload` flag as this prevents Werkzeug from creating another thread which messes up the async code.
+
+```
+pipenv run flask run --no-reload
+```
+
 ## Built With
 
 * Python
