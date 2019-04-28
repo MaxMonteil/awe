@@ -64,7 +64,7 @@ class Lighthouse:
         f = BytesIO()
         f.write(self._lighthouse_response)
         f.seek(0)
-        return f.getvalue()
+        return f
 
     async def _run_lighthouse_audit(self):
         """Run lighthouse audit on the target site."""
