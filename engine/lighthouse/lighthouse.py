@@ -68,7 +68,7 @@ class Lighthouse:
 
     async def _run_lighthouse_audit(self):
         """Run lighthouse audit on the target site."""
-        command = f"""bash ./engine/lighthouse/run_lighthouse.sh \
+        command = f"""/bin/bash ./engine/lighthouse/run_lighthouse.sh \
         {self._target_url} {self._audit_format} {os.environ.get("CHROME_PATH")}"""
 
         proc = await asyncio.create_subprocess_shell(
