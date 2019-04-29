@@ -15,7 +15,7 @@ RGB_LIMIT = 255
 COLOR_STEP = 10
 
 
-def run(html):
+def run(tag_data):
     """
     Modifies the background and foreground color of text content and background
     to increase the contrast.
@@ -26,99 +26,98 @@ def run(html):
     Return:
         <list> List of beautiful soup tags with proper CSS contrast elements and their path
     """
-    out = []
-    for item in html:
-        back = hex_to_rgb(item["colors"]["background"])
-        fore = hex_to_rgb(item["colors"]["foreground"])  # Text color
+    back = hex_to_rgb(tag_data["colors"]["background"])
+    fore = hex_to_rgb(tag_data["colors"]["foreground"])  # Text color
 
-        # True if the background is closer to white than black
-        backLight = is_light(back)
+    # True if the background is closer to white than black
+    backLight = is_light(back)
 
-        # Set initial conditions for the foreground text color
-        cond = {
-            "contrast": not contrast.passes_AA(
-                contrast.rgb(
-                    [v / RGB_LIMIT for v in back], [v / RGB_LIMIT for v in fore]
-                )
-            ),
-            "notLightest": max(fore) < RGB_LIMIT or backLight,
-            "notDarkest": all(fore) or not backLight,
-        }
-
-        # Loop to adjust the foreground colors
-        while all(cond.values()):
-            fore = [
-                color
-                + (
-                    -min(COLOR_STEP, color)
-                    if backLight
-                    else min(COLOR_STEP, RGB_LIMIT - color)
-                )
-                for color in fore
-            ]
-
-            cond["contrast"] = not contrast.passes_AA(
-                contrast.rgb(
-                    [v / RGB_LIMIT for v in back], [v / RGB_LIMIT for v in fore]
-                )
+    # Set initial conditions for the foreground text color
+    cond = {
+        "contrast": not contrast.passes_AA(
+            contrast.rgb(
+                [v / RGB_LIMIT for v in back], [v / RGB_LIMIT for v in fore]
             )
-            cond["notLightest"] = max(fore) < RGB_LIMIT or backLight
-            cond["notDarkest"] = all(fore) or not backLight
+        ),
+        "notLightest": max(fore) < RGB_LIMIT or backLight,
+        "notDarkest": all(fore) or not backLight,
+    }
 
-        # Now we adjust the conditions to the background colors
+    # Loop to adjust the foreground colors
+    while all(cond.values()):
+        fore = [
+            color
+            + (
+                -min(COLOR_STEP, color)
+                if backLight
+                else min(COLOR_STEP, RGB_LIMIT - color)
+            )
+            for color in fore
+        ]
+
+        cond["contrast"] = not contrast.passes_AA(
+            contrast.rgb(
+                [v / RGB_LIMIT for v in back], [v / RGB_LIMIT for v in fore]
+            )
+        )
+        cond["notLightest"] = max(fore) < RGB_LIMIT or backLight
+        cond["notDarkest"] = all(fore) or not backLight
+
+    # Now we adjust the conditions to the background colors
+    cond["notLightest"] = max(back) < RGB_LIMIT or not backLight
+    cond["notDarkest"] = all(back) or backLight
+
+    # Loop to adjust the background colors
+    while all(cond.values()):
+        back = [
+            color
+            + (
+                min(COLOR_STEP, RGB_LIMIT - color)
+                if backLight
+                else -min(COLOR_STEP, color)
+            )
+            for color in back
+        ]
+
+        cond["contrast"] = not contrast.passes_AA(
+            contrast.rgb(
+                [v / RGB_LIMIT for v in back], [v / RGB_LIMIT for v in fore]
+            )
+        )
         cond["notLightest"] = max(back) < RGB_LIMIT or not backLight
         cond["notDarkest"] = all(back) or backLight
 
-        # Loop to adjust the background colors
-        while all(cond.values()):
-            back = [
-                color
-                + (
-                    min(COLOR_STEP, RGB_LIMIT - color)
-                    if backLight
-                    else -min(COLOR_STEP, color)
-                )
-                for color in back
-            ]
+    snippet = tag_data["snippet"]
+    if not snippet.has_attr("style"):
+        snippet["style"] = ""
 
-            cond["contrast"] = not contrast.passes_AA(
-                contrast.rgb(
-                    [v / RGB_LIMIT for v in back], [v / RGB_LIMIT for v in fore]
-                )
-            )
-            cond["notLightest"] = max(back) < RGB_LIMIT or not backLight
-            cond["notDarkest"] = all(back) or backLight
+    backChanged = rgb_to_hex(back) != tag_data["colors"]["background"]
 
-        tag = BeautifulSoup(item["snippet"], "html.parser").find()
-        if not tag.has_attr("style"):
-            tag["style"] = ""
+    # Remove "background-color" styles if its color was changed
+    if backChanged and "background-color" in snippet["style"]:
+        start = snippet["style"].find("background-color")
+        end = snippet["style"].find(";", start) + 1
+        snippet["style"] = snippet["style"].replace(snippet["style"][start:end], "")
 
-        backChanged = rgb_to_hex(back) != item["colors"]["background"]
+    # Remove "background" styles if its color was changed
+    if backChanged and "background" in snippet["style"]:
+        start = snippet["style"].find("background")
+        end = snippet["style"].find(";", start) + 1
+        snippet["style"] = snippet["style"].replace(snippet["style"][start:end], "")
 
-        # Remove "background-color" styles if its color was changed
-        if backChanged and "background-color" in tag["style"]:
-            start = tag["style"].find("background-color")
-            end = tag["style"].find(";", start) + 1
-            tag["style"] = tag["style"].replace(tag["style"][start:end], "")
+    # Remove "color" styles
+    if "color" in snippet["style"]:
+        start = snippet["style"].find("color")
+        end = snippet["style"].find(";", start) + 1
+        snippet["style"] = snippet["style"].replace(snippet["style"][start:end], "")
 
-        # Remove "background" styles if its color was changed
-        if backChanged and "background" in tag["style"]:
-            start = tag["style"].find("background")
-            end = tag["style"].find(";", start) + 1
-            tag["style"] = tag["style"].replace(tag["style"][start:end], "")
+    # Add the new calculated styles
+    snippet["style"] += f"color: #{rgb_to_hex(fore)}; "
+    snippet["style"] += f"background: #{rgb_to_hex(back)}; " if backChanged else ""
 
-        # Remove "color" styles
-        if "color" in tag["style"]:
-            start = tag["style"].find("color")
-            end = tag["style"].find(";", start) + 1
-            tag["style"] = tag["style"].replace(tag["style"][start:end], "")
+    tag_data["snippet"] = snippet
 
-        # Add the new calculated styles
-        tag["style"] += f"color: #{rgb_to_hex(fore)}; "
-        tag["style"] += f"background: #{rgb_to_hex(back)}; " if backChanged else ""
-        out.append({"path": item["path"], "snippet": tag})
-
-    return out
+    return tag_data
 
 
 def hex_to_rgb(hexValue):
