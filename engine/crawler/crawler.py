@@ -40,9 +40,7 @@ class Crawler:
         """
         if self._raw_html is None or self._bs_html is None or force:
             browser = await launch(
-                handleSIGINT=False,
-                handleSIGTERM=False,
-                handleSIGHUP=False,
+                handleSIGINT=False, handleSIGTERM=False, handleSIGHUP=False
             )
             page = await browser.newPage()
             await page.goto(self._target_url)

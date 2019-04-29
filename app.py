@@ -81,7 +81,7 @@ def awe():
         send_file(
             engine.accessible_site,
             as_attachment=True,
-            attachment_filename="awe_site.html"
+            attachment_filename="awe_site.html",
         ),
         200,
     )
@@ -100,4 +100,4 @@ if __name__ == "__main__":
         debug=True,
         host="0.0.0.0" if os.environ.get("ON_GCP") else None,
         port=8000 if os.environ.get("ON_GCP") else None,
-)
+    )

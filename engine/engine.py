@@ -102,7 +102,6 @@ class Engine:
     def accessible_site(self):
         return self._accessible_site
 
-
     async def _run_functions(self, failing_tags):
         """
         Organizes function calls sending them the proper HTML and Audit data.
