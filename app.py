@@ -6,6 +6,9 @@ import requests
 import asyncio
 
 
+# On *nix systems, the event loop needs to have a child watcher attached but this isn't
+# done automatically, additionally it can only be done while in the main thread which
+# is where Flask runs.
 try:
     loop = asyncio.get_event_loop()
 except RuntimeError:
@@ -81,7 +84,7 @@ def awe():
         send_file(
             engine.accessible_site,
             as_attachment=True,
-            attachment_filename="awe_site.html"
+            attachment_filename="awe_site.html",
         ),
         200,
     )
@@ -100,4 +103,4 @@ if __name__ == "__main__":
         debug=True,
         host="0.0.0.0" if os.environ.get("ON_GCP") else None,
         port=8000 if os.environ.get("ON_GCP") else None,
-)
+    )

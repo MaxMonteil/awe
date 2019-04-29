@@ -40,12 +40,10 @@ class Crawler:
         """
         if self._raw_html is None or self._bs_html is None or force:
             browser = await launch(
-                handleSIGINT=False,
-                handleSIGTERM=False,
-                handleSIGHUP=False,
+                handleSIGINT=False, handleSIGTERM=False, handleSIGHUP=False
             )
             page = await browser.newPage()
-            await page.goto(self._target_url)
+            await page.goto(self._target_url, timeout=0)
             content = await page.content()
 
             # Raw HTML should be treated as a file in case of transfer

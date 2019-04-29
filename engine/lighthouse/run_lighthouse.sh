@@ -3,6 +3,7 @@
 # $3 path to chrome executable
 CHROME_PATH=$3
 lighthouse --output $2 \
+    --emulated-form-factor=none \
     --output-path stdout \
     --quiet \
     --chrome-flags="--headless --no-first-run" \
