@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 
-
 def run(tag_data):
     """
     Ensures that the user-scalable="no" parameter is not present in 
@@ -8,12 +7,11 @@ def run(tag_data):
     is not less than 2.
 
     Parameters:
-        html <list> Dictionaries with HTML snippets as strings
+        tag_data <dict> Data of the faulty tag
     Return:
-        <list> List of beautiful soup proper <meta> tags
+        <dict> Data of the fixed tag
     """
     snippet = tag_data["snippet"]
-    out = []
     # Remove "user-scalable=no if exists in the "content" attribute
     if "user-scalable" in snippet["content"]:
         start = snippet["content"].find("user-scalable")
@@ -23,11 +21,62 @@ def run(tag_data):
             snippet["content"][start:end], "")
     # Sets "maximum-scale" to be at least = 2
     if not "maximum-scale" in snippet["content"]:
-        snippet["conent"] = snippet["content"] + ", maximum-scale=2"
-    scaleIndex = snippet["conent"].find("maximum-scale")+14
-    scale = int(scaleIndex)
+        snippet["contnet"] = snippet["content"] + ", maximum-scale=2"
+    scaleIndexStart = first_int(
+        snippet["content"][snippet["content"].find("maximum-scale")+14:])
+    scaleIndexEnd = scaleIndexStart + \
+        num_length(snippet["content"][scaleIndexStart:])
+    scale = int(snippet["content"][scaleIndexStart:scaleIndexEnd])
     scale = 2 if scale < 2 else scale
     snippet["content"] = snippet["content"].replace(
-        snippet["content"][scaleIndex:scaleIndex+1], scale)
+        snippet["content"][scaleIndexStart:scaleIndexEnd], scale)
     tag_data["snippet"] = snippet
     return tag_data
+
+def is_int(n):
+    """
+    Helper function to determine whether a character is a string or not
+
+    Parameters:
+        n <char> 
+    Return:
+        <bool> True if the character is numeric
+    """
+    try:
+        int(n)
+        return True
+    except:
+        return False
+
+def num_length(full):
+    """
+    Helper function which, given a string and a starting index, 
+    determines how many characters (if any) a number has starting
+    at the given index
+    
+    Parameters:
+        full <string> The full containing string
+        start <int> Starting index to look at
+    Return:
+        <int> The number of characters of the number
+    """
+    length = 0
+    while(is_int(full[length]) or full[length]=='.'):
+        length += 1
+    return length
+
+def first_int(full):
+    """
+    Helper function to find the first integer in a string, but only
+    searches in the first 5 characters of the string
+
+    Parameters:
+        full <string> The desired string to look in
+    Return:
+        <int> Index of the first int
+    """
+    for i in range(5):
+        if is_int(full[i]):
+            return i
+        else:
+            raise Exception('String must have an int in the first 5 characters: {}'.format(full[:6]))
