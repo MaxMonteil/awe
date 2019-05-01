@@ -70,7 +70,7 @@ class Lighthouse:
         """Run lighthouse audit on the target site."""
         command = f"""bash ./engine/lighthouse/run_lighthouse.sh \
         {self._target_url} {self._audit_format} {os.environ.get("CHROME_PATH")} \
-        {" ".join(self.function_names)}"""
+        {" ".join(self._function_names)}"""
 
         proc = await asyncio.create_subprocess_shell(
             command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
