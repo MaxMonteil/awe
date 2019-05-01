@@ -22,7 +22,7 @@ from engine.functions.list import list as _list
 from engine.functions.label import label as _label
 from engine.functions.layout_table import layout_table as _layout_table
 from engine.functions.link_name import link_name as _link_name
-from engine.functions.list_item import list_item as _list_item
+from engine.functions.listitem import listitem as _listitem
 from engine.functions.meta_refresh import meta_refresh as _meta_refresh
 from engine.functions.meta_viewport import meta_viewport as _meta_viewport
 from engine.functions.object_alt import object_alt as _object_alt
@@ -53,7 +53,7 @@ _functions_mapping = {
     "label": _label,
     "layout_table": _layout_table,
     "link_name": _link_name,
-    "list_item": _list_item,
+    "listitem": _listitem,
     "meta_refresh": _meta_refresh,
     "meta_viewport": _meta_viewport,
     "object_alt": _object_alt,
