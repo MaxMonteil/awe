@@ -6,7 +6,7 @@ CHROME_PATH=$3
 lighthouse --output $2 \
     --emulated-form-factor=none \
     --output-path stdout \
-    --onlyAudits $4
+    --onlyAudits $4 \
     --quiet \
     --chrome-flags="--headless --no-first-run" \
     $1
