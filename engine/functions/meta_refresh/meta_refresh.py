@@ -9,10 +9,17 @@ Procedure taken from: https://www.w3.org/TR/2016/NOTE-WCAG20-TECHS-20161007/F41
 
 
 def run(html):
+    """
+    Parameters:
+        html <class bs4.BeautifulSoup> The full HTML of the target site
+
+    Return:
+        <class bs4.BeautifulSoup> Same site without refresh meta tags
+    """
     # find all meta tags
     for meta in html.find_all("meta"):
         # if present, remove the http-equiv="refresh" attribute
-        if (meta.get("http-equiv") and meta["http-equiv"].lower() == "refresh"):
+        if meta.get("http-equiv") and meta["http-equiv"].lower() == "refresh":
             meta.decompose()
 
     return html
