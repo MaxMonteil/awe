@@ -1,13 +1,11 @@
 # $1 url
 # $2 output format
 # $3 path to chrome executable
-# $4 actual audits to run
 CHROME_PATH=$3
-lighthouse \
+lighthouse --output $2 \
     --emulated-form-factor=none \
     --output-path stdout \
-    --onlyAudits $4 \
+    --config-path /home/mhmurtada/new/awe/engine/lighthouse/lighthouse_config.js \
     --quiet \
     --chrome-flags="--headless --no-first-run" \
-    $1 \
-    --output $2 \
+    $1

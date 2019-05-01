@@ -32,7 +32,10 @@ def get_analysis():
         output_format = "json"
 
     print(f"Calling lighthouse on {target_url}")
-    engine = Engine(target_url=target_url, audit_format=output_format)
+    if output_format == "json":
+        engine = Engine(target_url=target_url)
+    else:
+        engine = Engine(target_url=target_url,audit_format="html")
 
     asyncio.set_event_loop(loop)
     loop.run_until_complete(engine.run_analysis())
@@ -49,7 +52,6 @@ def get_analysis():
             ),
             200,
         )
-
 
 @app.route("/api/crawl")
 def crawl():
@@ -97,7 +99,6 @@ def catch_all(path):
         return requests.get(f"http://localhost:8080/{path}").text
     return render_template("index.html")
 
-
 @app.route("/contact", defaults={"path": ""})
 # @app.route("/<path:path>")
 def contact(path):
@@ -105,14 +106,12 @@ def contact(path):
         return requests.get(f"http://localhost:8080/{path}").text
     return render_template("contact.html")
 
-
 @app.route("/about", defaults={"path": ""})
 # @app.route("/<path:path>")
 def about(path):
     if app.debug:
         return requests.get(f"http://localhost:8080/{path}").text
     return render_template("about.html")
-
 
 @app.route("/services", defaults={"path": ""})
 # @app.route("/<path:path>")
