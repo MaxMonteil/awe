@@ -44,7 +44,7 @@ def get_analysis():
         return (
             send_file(
                 engine.audit,
-                as_attachment=True,
+                as_attachment=False,
                 attachment_filename=f"awe_analysis.{output_format}",
             ),
             200,
