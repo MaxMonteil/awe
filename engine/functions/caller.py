@@ -4,6 +4,8 @@
 Helper module to manage imports of awe function and their pipelined calls.
 """
 
+from bs4 import BeautifulSoup
+
 from engine.functions.accesskeys import accesskeys as _accesskeys
 from engine.functions.audio_caption import audio_caption as _audio_caption
 from engine.functions.button_name import button_name as _button_name
@@ -36,33 +38,34 @@ from engine.functions.video_description import video_description as _video_descr
 
 _functions_mapping = {
     "accesskeys": _accesskeys,
-    "audio_caption": _audio_caption,
-    "button_name": _button_name,
+    "audio-caption": _audio_caption,
+    "button-name": _button_name,
     "bypass": _bypass,
-    "color_contrast": _color_contrast,
-    "definition_list": _definition_list,
+    "color-contrast": _color_contrast,
+    "definition-list": _definition_list,
     "dlitem": _dlitem,
-    "document_title": _document_title,
-    "duplicate_id": _duplicate_id,
-    "frame_title": _frame_title,
-    "html_lang": _html_lang,
-    "html_lang_valid": _html_lang_valid,
-    "image_alt": _image_alt,
-    "input_image_alt": _input_image_alt,
-    "list": _list,
+    "document-title": _document_title,
+    "duplicate-id": _duplicate_id,
+    "frame-title": _frame_title,
+    "html-lang": _html_lang,
+    "html-lang-valid": _html_lang_valid,
+    "image-alt": _image_alt,
+    "input-image-alt": _input_image_alt,
     "label": _label,
-    "layout_table": _layout_table,
-    "link_name": _link_name,
+    "label": _label,
+    "layout-table": _layout_table,
+    "link-name": _link_name,
+    "list": _list,
     "listitem": _listitem,
-    "meta_refresh": _meta_refresh,
-    "meta_viewport": _meta_viewport,
-    "object_alt": _object_alt,
-    "tab_index": _tab_index,
-    "td_headers_attr": _td_headers_attr,
-    "th_has_data_cells": _th_has_data_cells,
-    "valid_lang": _valid_lang,
-    "video_caption": _video_caption,
-    "video_description": _video_description,
+    "meta-refresh": _meta_refresh,
+    "meta-viewport": _meta_viewport,
+    "object-alt": _object_alt,
+    "tab-index": _tab_index,
+    "td-headers-attr": _td_headers_attr,
+    "th-has-data-cells": _th_has_data_cells,
+    "valid-lang": _valid_lang,
+    "video-caption": _video_caption,
+    "video-description": _video_description,
 }
 
 
@@ -76,6 +79,7 @@ def run_pipeline(tag):
     Return:
         <dict> The same tag but with the snippet fixed
     """
+    tag["snippet"] = BeautifulSoup(tag["snippet"], "html.parser").find()
     return _compose_pipeline(tag["pipeline"])(tag)
 
 

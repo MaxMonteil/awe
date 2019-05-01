@@ -80,16 +80,28 @@ class Engine:
         """Get the scraped HTML as a BytesIO file-like format for transfers."""
         return self._crawler.raw_html
 
-    def run_engine(self):
+    async def run_engine(self):
         """
         Main Engine entry point.
-        Crawls the target site to get it's HTML, runs the Lighthouse Audit on the site,
-        and fixes the issues flagged by the audit.
+        Crawls the target site to get it's HTML, runs the Lighthouse Audit on the site.
+
+        Sends each tag through it's pipeline.
+        Accessibility functions receive a dictionary with keys:
+        ["colors", "selector", "snippet", "path"]
+
+        Function data keys:
+            "color"     foreground and background colors for the color_contrast funct
+            "selector"  css selector for the tag
+            "snippet"   failing HTML tag as a string
+            "path"      HTML tree path to the snippet
+            "pipeline"  List of the functions the snippet needs to go through
 
         Returns:
             <BytesIO> the accessible version of the site
         """
-        fixed_tags = asyncio.run(self._run_functions(self._lighthouse.failing_tags))
+        await asyncio.gather(self.run_analysis(), self.run_crawler())
+
+        fixed_tags = (Caller.run_pipeline(tag) for tag in self._lighthouse.failing_tags)
         self._reassemble_site(fixed_tags)
 
         # All offending tags will have now been replaced, save to bytes for transfer
@@ -101,26 +113,6 @@ class Engine:
     @property
     def accessible_site(self):
         return self._accessible_site
-
-    async def _run_functions(self, failing_tags):
-        """
-        Organizes function calls sending them the proper HTML and Audit data.
-        Accessibility functions receive a dictionary with keys:
-        ["colors", "selector", "snippet", "path"]
-
-        Function data keys:
-            "color"     foreground and background colors for the color_contrast funct
-            "selector"  css selector for the tag
-            "snippet"   failing HTML tag as a string
-            "path"      HTML tree path to the snippet
-            "pipeline"  List of the functions the snippet needs to go through
-        """
-        await asyncio.gather(self.run_analysis(), self.run_crawler())
-
-        return (
-            {"snippet": Caller.run_pipeline(tag), "path": tag["path"]}
-            for tag in failing_tags
-        )
 
     def _reassemble_site(self, fixed_tags):
         """

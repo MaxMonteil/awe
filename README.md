@@ -11,6 +11,8 @@ The Accessibility Web Engine aims to make the web more accessible by following W
 * [Getting Started](#getting-started)
 	* [Prerequisites](#prerequisites)
 	* [Installing](#installing)
+	* [Running AWE](#running-awe)
+	* [Building Accessibility Functions](#building-accessibility-functions)
 * [API Functions](#api-functions)
 * [Deployment](#deployment)
 * [Built With](#built-with)
@@ -82,16 +84,55 @@ It comes from this link:
 
 ### Running AWE
 
-If running on the Google Cloud instance make sure to set the environment variable `ON_GCP` to true, this enables running the engine with 
+If running on the Google Cloud instance make sure to set the environment variable `ON_GCP` to true, this enables running the engine with
 
 ```
 pipenv run python app.py
 ```
 
-To run the recommended way with flask change the host and port to what you need in then `.env` file, also make sure to run with the `--no-reload` flag as this prevents Werkzeug from creating another thread which messes up the async code.
+To run the recommended way, with flask, change the host and port to what you need in the `.env` file and make sure to run the server with the `--no-reload` flag as this prevents Werkzeug from creating another thread which messes up the async code.
 
 ```
 pipenv run flask run --no-reload
+```
+
+### Building Accessibility Functions
+
+In order to apply multiple fixes to a tag before replacing it in the original HTML, each tag is given a pipeline of accessibility functions to go through. This means that all the functions should return their result in the same format they received it.
+
+#### Data Format
+
+```python
+tag_data = {
+    "snippet": <class 'bs4.element.Tag'>,   # Actual HTML snippet as a Beautiful soup object
+    "pipeline": <class 'function'>,         # Curried function pipeline the tag is going through
+    "path": (1,0,1,...),                    # int tuple of the path down the original HTML to the snippet
+    "selector": "#title",                   # CSS selector of the snippet
+    "color": {                              # Used only by the color-contrast function
+       "foreground": "FFFFFF",              #   The foreground and background colors of the snippet text content
+       "background": "000000",
+    },
+}
+```
+
+#### Function Structure
+
+In order to function as a step in the pipeline here is the function structure to follow:
+
+```python
+# example_function.py
+
+def run(tag_data):
+    snippet = tag_data["snippet"]
+
+    # Modifications to the BeautifulSoup tag 
+    ...
+
+    tag_data["snippet"] = snippet
+    return tag_data
+
+def helper_function():
+    ...
 ```
 
 ## Built With

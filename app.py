@@ -6,6 +6,9 @@ import requests
 import asyncio
 
 
+# On *nix systems, the event loop needs to have a child watcher attached but this isn't
+# done automatically, additionally it can only be done while in the main thread which
+# is where Flask runs.
 try:
     loop = asyncio.get_event_loop()
 except RuntimeError:
