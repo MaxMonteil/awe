@@ -34,8 +34,6 @@ INDIRECT_FUNCTIONS = [
 ]
 
 # Functions that work by directly modifying the original HTML
-DIRECT_FUNCTIONS = [
-    "meta-refresh",
-]
+DIRECT_FUNCTIONS = ["meta-refresh"]
 
 AWE_FUNCTIONS = INDIRECT_FUNCTIONS + DIRECT_FUNCTIONS
