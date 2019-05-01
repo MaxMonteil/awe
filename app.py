@@ -97,6 +97,27 @@ def catch_all(path):
         return requests.get(f"http://localhost:8080/{path}").text
     return render_template("index.html")
 
+@app.route("/contact", defaults={"path": ""})
+# @app.route("/<path:path>")
+def contact(path):
+    if app.debug:
+        return requests.get(f"http://localhost:8080/{path}").text
+    return render_template("contact.html")
+
+@app.route("/about", defaults={"path": ""})
+# @app.route("/<path:path>")
+def about(path):
+    if app.debug:
+        return requests.get(f"http://localhost:8080/{path}").text
+    return render_template("about.html")
+
+@app.route("/services", defaults={"path": ""})
+# @app.route("/<path:path>")
+def services(path):
+    if app.debug:
+        return requests.get(f"http://localhost:8080/{path}").text
+    return render_template("services.html")
+
 
 if __name__ == "__main__":
     app.run(
