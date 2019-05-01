@@ -32,7 +32,10 @@ def get_analysis():
         output_format = "json"
 
     print(f"Calling lighthouse on {target_url}")
-    engine = Engine(target_url=target_url)
+    if output_format == "json":
+        engine = Engine(target_url=target_url)
+    else:
+        engine = Engine(target_url=target_url,audit_format="html")
 
     asyncio.set_event_loop(loop)
     loop.run_until_complete(engine.run_analysis())
@@ -44,12 +47,11 @@ def get_analysis():
         return (
             send_file(
                 engine.audit,
-                as_attachment=True,
+                as_attachment=False,
                 attachment_filename=f"awe_analysis.{output_format}",
             ),
             200,
         )
-
 
 @app.route("/api/crawl")
 def crawl():
