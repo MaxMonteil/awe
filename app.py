@@ -32,7 +32,7 @@ def get_analysis():
         output_format = "json"
 
     print(f"Calling lighthouse on {target_url}")
-    engine = Engine(target_url=target_url)
+    engine = Engine(target_url=target_url, audit_format=output_format)
 
     asyncio.set_event_loop(loop)
     loop.run_until_complete(engine.run_analysis())
