@@ -33,7 +33,7 @@ def run(tag_data):
 
     querystring = {"url": "{url}"} 
     headers = {
-        'subscription-key': "b992e1e8f82f4abf861191895e5f4a1f",#we registered to lateral.io and got our api token
+        'subscription-key': "b992e1e8f82f4abf861191895e5f4a1f",#we registered on lateral.io and got our api token
         'content-type': "application/json"}
 
     response = requests.request("GET", url, headers=headers, params=querystring) #extract sample text from the webpage
