@@ -17,6 +17,21 @@
     <link rel="stylesheet" href="/static/assets/css/animsition.min.css">
     <link rel="stylesheet" href="/static/assets/css/ionicons.min.css"> <!-- Resource style -->
     <link href="/static/assets/css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <style>
+    @media only screen and (max-device-width: 480px) {
+       .hero-content h2 {
+        font-size:100px !important;
+        margin-bottom:0 !important;
+        }
+        .hero-content h1 {
+        font-size: 50px !important;
+        letter-spacing:0 !important;
+        }
+        .subscribe-form .run-audit {
+        width:150px !important;
+        }
+    }
+    </style>
   </head>
   <body>
     <div class="wrapper animsition" data-animsition-in-class="fade-in"
@@ -63,7 +78,7 @@
               
           <div class="col-md-12">
             <div class="hero-image">
-              <img class="img-responsive" src="/static/assets/images/app_hero_2.png" width="700" height="700" alt=""/>
+              <center><img class="img-responsive" src="/static/assets/images/app_hero_2.png" width="700" height="700" alt=""/></center>
             </div>
           </div>
         </div>
@@ -80,8 +95,11 @@
         Generate an accessible version of your web page using our API. <br class="hidden-xs"> You will recieve an optimized accessible version of your webpage.
         </p>
       <div class="form wow fadeInUp" data-wow-delay="0.3s">
-        <form class="subscribe-form wow zoomIn" action="assets/php/subscribe.php" method="post" accept-charset="UTF-8" enctype="application/x-www-form-urlencoded" autocomplete="off" novalidate>
-          <input class="mail" type="email" name="email" placeholder="Enter your URL" autocomplete="off"><input class="run-audit" type="submit" value="Run Audit"><input class="make-accessible" type="submit" value="Make Accessible">
+        <form class="subscribe-form wow zoomIn" action="/" method="get" accept-charset="UTF-8" enctype="application/x-www-form-urlencoded" autocomplete="off" novalidate>
+          <input class="mail" type="url" name="url" autocomplete="off" placeholder="http://example.com" value="http://">
+          <input type="hidden" name="output" value="html">
+          <input class="run-audit" type="submit" value="Run Audit" formaction="/api/analyze">
+          <input class="make-accessible" type="submit" value="Make Accessible" formaction="/api/diff">
         </form>
         <div class="success-message"></div>
 			  <div class="error-message"></div>

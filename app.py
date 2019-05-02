@@ -1,10 +1,11 @@
+from io import BytesIO
 from engine import Engine
 from flask import Flask, request, send_file, jsonify, render_template
 from pathlib import Path
 import os
 import requests
 import asyncio
-
+from bs4 import BeautifulSoup
 
 # On *nix systems, the event loop needs to have a child watcher attached but this isn't
 # done automatically, additionally it can only be done while in the main thread which
@@ -88,6 +89,35 @@ def awe():
         200,
     )
 
+@app.route("/api/diff")
+def diff():
+    target_url = request.args.get("url", default="", type=str)
+
+    engine = Engine(target_url=target_url)
+
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(engine.run_engine())
+
+    soup = BeautifulSoup(open("dist/diff.html"),'html.parser')
+
+    old = soup.find("div",{"id":"old"})
+
+    old.string = engine.site_html.getvalue().decode('UTF-8')
+
+    new = soup.find("div",{"id":"new"})
+
+    new.string = engine.accessible_site.getvalue().decode('UTF-8')
+    byte_html = BytesIO()
+    byte_html.write(soup.encode())
+    byte_html.seek(0)
+    return (
+        send_file(
+            byte_html,
+            as_attachment=False,
+            attachment_filename="awe_site.html",
+        ),
+        200,
+    )
 
 @app.route("/", defaults={"path": ""})
 # @app.route("/<path:path>")
@@ -116,14 +146,6 @@ def services(path):
     if app.debug:
         return requests.get(f"http://localhost:8080/{path}").text
     return render_template("services.html")
-
-@app.route("/diff", defaults={"path": ""})
-# @app.route("/<path:path>")
-def diff(path):
-    if app.debug:
-        return requests.get(f"http://localhost:8080/{path}").text
-    return render_template("diff.html")
-
 
 if __name__ == "__main__":
     app.run(

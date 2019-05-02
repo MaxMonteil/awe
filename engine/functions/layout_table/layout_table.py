@@ -13,5 +13,6 @@ def run(tag_data):
 
     for caption in snippet.findAll('caption'):
        caption.decompose()
-
+    
+    tag_data["snippet"] = snippet
     return tag_data
