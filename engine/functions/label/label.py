@@ -1,6 +1,6 @@
-# Temporary run function to make testing possible
-# By actully having a run function defined it can be called in a pipeline
+from bs4 import BeautifulSoup
 
-
-def run(html):
-    return html
+def run(tag_data):
+    snippet = tag_data["snippet"]
+    snippet.find('label')['for'] = snippet.find('input').get('id')
+    return tag_data

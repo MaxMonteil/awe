@@ -32,10 +32,7 @@ def get_analysis():
         output_format = "json"
 
     print(f"Calling lighthouse on {target_url}")
-    if output_format == "json":
-        engine = Engine(target_url=target_url)
-    else:
-        engine = Engine(target_url=target_url,audit_format="html")
+    engine = Engine(target_url=target_url,audit_format=output_format)
 
     asyncio.set_event_loop(loop)
     loop.run_until_complete(engine.run_analysis())
@@ -119,6 +116,13 @@ def services(path):
     if app.debug:
         return requests.get(f"http://localhost:8080/{path}").text
     return render_template("services.html")
+
+@app.route("/diff", defaults={"path": ""})
+# @app.route("/<path:path>")
+def diff(path):
+    if app.debug:
+        return requests.get(f"http://localhost:8080/{path}").text
+    return render_template("diff.html")
 
 
 if __name__ == "__main__":
