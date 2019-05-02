@@ -19,7 +19,10 @@ class Lighthouse:
     response parser.
 
     Parameters:
-        function_names <list> List of all the supported a11y functions
+        function_names <namedtuple> Tuple of all the supported a11y functions
+            fields:
+                INDIRECT <tuple> A11y functions that accept and fix a snippet
+                DIRECT <tuple> A11y functions that change the original HMTL directly
         target_url <str> URL of the target website
         audit_format <str> Format in which lighthouse should return the audit
 

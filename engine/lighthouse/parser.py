@@ -14,7 +14,10 @@ class ResponseParser:
 
     Parameters:
         lighthouse_response <str> String response in JSON format
-        function_names <list> List of all the supported a11y functions
+        function_names <namedtuple> Tuple of all the supported a11y functions
+            fields:
+                INDIRECT <tuple> A11y functions that accept and fix a snippet
+                DIRECT <tuple> A11y functions that change the original HMTL directly
 
     Properties:
         audit <dict> Parsed response mapping data to appropriate AWE function
@@ -41,7 +44,9 @@ class ResponseParser:
         if not self._audit_data or force:
             self._lh_score = self._lh_response["categories"]["accessibility"]["score"]
             self._audit_data = dict(
-                self._parse_lighthouse_response(self._lh_response, self._functions)
+                self._parse_lighthouse_response(
+                    self._lh_response, self._functions.INDIRECT
+                )
             )
 
     @property
