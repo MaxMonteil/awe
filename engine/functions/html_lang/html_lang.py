@@ -26,11 +26,20 @@ def run(tag_data):
     snippet=str(tag_data) 
     start_index = snippet.index('gr__') + 4 #to get the start of the url
     half_snippet = snippet[start_index:] #filter first half
-    repl = half_snippet.replace('_', '.') 
-    end_index = repl.index('\"')#filter second half
-    url=repl[:end_index] #final url
+    repl = half_snippet.replace('_', '.')
+    if ( ' ' in repl== True):
+        end_index =repl.index(' ')
+    elif('\"' in repl ==True):
+        end_index = repl.index('\"')
 
+    url=repl[:end_index] #final url
+    print(url)
     snippet = "<html lang=\"" + detect(url) + "\">"
+    print(snippet)
     tag_data["snippet"] = snippet
     return tag_data
 
+html_doc = """<html class=\"gr__lorientlejour_com\">"""
+tag_data = BeautifulSoup(html_doc, 'html.parser') #specified the parser. may need to install it on VM
+
+run(tag_data)
