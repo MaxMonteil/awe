@@ -2,8 +2,12 @@
 
 """Constant list of all AWE API functions."""
 
+from collections import namedtuple
+
+FunctionsList = namedtuple("FUNCTIONS", ["INDIRECT", "DIRECT"])
+
 # Functions that work by receiving then fixing a faulty HTML tag
-INDIRECT_FUNCTIONS = [
+INDIRECT_FUNCTIONS = (
     "accesskeys",
     "audio-caption",
     "button-name",
@@ -31,9 +35,9 @@ INDIRECT_FUNCTIONS = [
     "valid-lang",
     "video-caption",
     "video-description",
-]
+)
 
 # Functions that work by directly modifying the original HTML
-DIRECT_FUNCTIONS = ["meta-refresh"]
+DIRECT_FUNCTIONS = ("meta-refresh",)
 
-AWE_FUNCTIONS = INDIRECT_FUNCTIONS + DIRECT_FUNCTIONS
+AWE_FUNCTIONS = FunctionsList(INDIRECT_FUNCTIONS, DIRECT_FUNCTIONS)
