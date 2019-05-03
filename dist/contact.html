@@ -11,27 +11,11 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Poppins:400,300,500,700,600" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="/static/assets/css/animate.css"> <!-- Resource style -->
+    <link rel="stylesheet" href="/static/assets/css/animsition.min.css">
     <link rel="stylesheet" href="/static/assets/css/owl.carousel.css">
     <link rel="stylesheet" href="/static/assets/css/owl.theme.css">
-    <link rel="stylesheet" href="/static/assets/css/magnific-popup.css">
-    <link rel="stylesheet" href="/static/assets/css/animsition.min.css">
     <link rel="stylesheet" href="/static/assets/css/ionicons.min.css"> <!-- Resource style -->
     <link href="/static/assets/css/style.css" rel="stylesheet" type="text/css" media="all" />
-    <style>
-    @media only screen and (max-device-width: 480px) {
-       .hero-content h2 {
-        font-size:100px !important;
-        margin-bottom:0 !important;
-        }
-        .hero-content h1 {
-        font-size: 50px !important;
-        letter-spacing:0 !important;
-        }
-        .subscribe-form .run-audit {
-        width:150px !important;
-        }
-    }
-    </style>
   </head>
   <body>
     <div class="wrapper animsition" data-animsition-in-class="fade-in"
@@ -54,62 +38,83 @@
                 <!-- Collect the nav links, forms, and other content for toggling -->
               <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li><a class="page-scroll" href="/">Home</a></li>
+                    <li><a href="/">Home</a></li>
                     <li><a href="services">Services</a></li>
                     <li><a href="about">About</a></li>
-                    <li><a href="contact">Contact</a></li>
+                    <li><a class="page-scroll" href="contact">Contact</a></li>
                 </ul>
+              </div>
             </div>
-          </div>
-        </nav><!-- /.navbar-collapse -->
-      </div><!-- /.container-fluid -->
+          </nav><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
 
     <div class="main" id="main"><!-- Main Section-->
-      <div class="hero-section app-hero">
-        <div class="container">
-          <div class="hero-content app-hero-content text-center">
-            <div class="col-md-10 col-md-offset-1 nopadding">
-                <h2 class="wow fadeInUp" data-wow-delay="0s">AWE </h2>
-                <h1 class="wow fadeInUp" data-wow-delay="0s">Accessibility Web Engine </h1>
-                <p class="wow fadeInUp" data-wow-delay="0.2s">
-                  MAKING THE WEB ACCESSIBILE TO EVERYONE.
-                </p>
-                <a class="btn btn-primary btn-action popup wow fadeInUp" data-wow-delay="0.2s" href="https://www.youtube.com/watch?v=wxBiixt1cH8">Watch Intro</a>
-              
-          <div class="col-md-12">
-            <div class="hero-image">
-              <center><img class="img-responsive" src="/static/assets/images/app_hero_2.png" width="700" height="700" alt=""/></center>
-            </div>
+    <div class="contact-section">
+      <div class="container">
+        <div class="col-md-9">
+          <h1>Contact Us</h1>
+          <p>
+            Email us with any questions or inquiries. Just ask and we'll reply <br class="hidden-xs"> within 24 hours unless it is a weekend.
+          </p>
+          <div class="contact-form">
+            <form id="contact-form" method="post" action="assets/php/contact.php" role="form">
+              <div class="messages"></div>
+              <div class="controls">
+              <div class="row">
+                  <div class="col-md-6">
+                      <div class="form-group">
+                          <label for="form_name">Firstname *</label>
+                          <input id="form_name" type="text" name="name" class="form-control" placeholder="Please enter your first name *" required="required" data-error="First name is required.">
+                          <div class="help-block with-errors"></div>
+                      </div>
+                  </div>
+                  <div class="col-md-6">
+                      <div class="form-group">
+                          <label for="form_lastname">Lastname *</label>
+                          <input id="form_lastname" type="text" name="surname" class="form-control" placeholder="Please enter your last name *" required="required" data-error="Last name is required.">
+                          <div class="help-block with-errors"></div>
+                      </div>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-md-6">
+                      <div class="form-group">
+                          <label for="form_email">Email *</label>
+                          <input id="form_email" type="email" name="email" class="form-control" placeholder="Please enter your email *" required="required" data-error="Valid email is required.">
+                          <div class="help-block with-errors"></div>
+                      </div>
+                  </div>
+                  <div class="col-md-6">
+                      <div class="form-group">
+                          <label for="form_phone">Phone *</label>
+                          <input id="form_phone" type="tel" name="phone" class="form-control" placeholder="Please enter your phone number *"required="required" data-error="Valid phone number is required.">
+                          <div class="help-block with-errors"></div>
+                      </div>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-md-12">
+                      <div class="form-group">
+                          <label for="form_message">Message *</label>
+                          <textarea id="form_message" name="message" class="form-control" placeholder="Please enter your message *" rows="4" required="required" data-error="Please,leave us a message."></textarea>
+                          <div class="help-block with-errors"></div>
+                      </div>
+                  </div>
+                  <div class="col-md-12">
+                      <input type="submit" class="btn btn-success btn-send" value="Send message">
+                  </div>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>
     </div>
 
-    
-<!-- API Engine -->
-  <div class="cta-sub text-center no-color">
-    <div class="container">
-        <hr>
-      <h1 class="wow fadeInUp" data-wow-delay="0s">Developer API</h1>
-        <p class="wow fadeInUp" data-wow-delay="0.2s">
-        Generate an accessible version of your web page using our API. <br class="hidden-xs"> You will recieve an optimized accessible version of your webpage.
-        </p>
-      <div class="form wow fadeInUp" data-wow-delay="0.3s">
-        <form class="subscribe-form wow zoomIn" action="/" method="get" accept-charset="UTF-8" enctype="application/x-www-form-urlencoded" autocomplete="off" novalidate>
-          <input class="mail" type="url" name="url" autocomplete="off" placeholder="http://example.com" value="http://">
-          <input type="hidden" name="output" value="html">
-          <input class="run-audit" type="submit" value="Run Audit" formaction="/api/analyze">
-          <input class="make-accessible" type="submit" value="Make Accessible" formaction="/api/diff">
-        </form>
-        <div class="success-message"></div>
-			  <div class="error-message"></div>
-      </div>
-    </div>
-  </div>
 
-  
+
 <!-- Footer Section -->
-  <div class="footer">
+<div class="footer">
     <div class="container">
         <div class="col-md-12 text-center">
           <img class="img-circle" src="/static/assets/logos/logo.png" width="40" height="40" alt="" />
@@ -136,7 +141,6 @@
 
   <!-- Scroll To Top Ends-->
 
-
     </div><!-- Main Section -->
   </div><!-- Wrapper-->
 
@@ -145,7 +149,8 @@
   <script type="text/javascript" src="/static/assets/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="/static/assets/js/plugins.js"></script>
   <script type="text/javascript" src="/static/assets/js/menu.js"></script>
+  <script type="text/javascript" src="/static/assets/js/contact.js"></script>
+  <script type="text/javascript" src="/static/assets/js/validator.js"></script>
   <script type="text/javascript" src="/static/assets/js/custom.js"></script>
-  <script type="text/javascript" src="/static/assets/js/script.js"></script>
   </body>
 </html>

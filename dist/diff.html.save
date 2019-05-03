@@ -1,0 +1,43 @@
+<html>
+<head>
+<style>
+ins {
+    text-decoration: none;
+    background-color: #d4fcbc;
+}
+
+del {
+    text-decoration: line-through;
+    background-color: #fbb6c2;
+    color: #555;
+}
+</style>
+</head>
+<body>
+<div id="output"></div>
+
+function old()
+{ 
+fetch('/static/diff/before.html')
+  .then(response => response.text())
+  .then((data) => {
+    return data
+  })
+}
+
+function newH()
+{
+fetch('/static/diff/after.html')
+  .then(response => response.text()) 
+  .then((data) => {
+    return data
+  })
+}
+
+output = htmldiff(old(), newH())
+
+document.getElementById("output").innerHTML = output
+<script src="/static/diff/htmldiff.js"></script>
+<script src="/static/diff/driver.js"></script>
+</body>
+</html>
