@@ -90,14 +90,21 @@
   <div class="cta-sub text-center no-color">
     <div class="container">
         <hr>
-      <h1 class="wow fadeInUp" data-wow-delay="0s">Developer API</h1>
+      <h1 id = api class="wow fadeInUp" data-wow-delay="0s">Developer API</h1>
         <p class="wow fadeInUp" data-wow-delay="0.2s">
         Generate an accessible version of your web page using our API. <br class="hidden-xs"> You will recieve an optimized accessible version of your webpage.
         </p>
       <div class="form wow fadeInUp" data-wow-delay="0.3s">
         <form class="subscribe-form wow zoomIn" action="/" method="get" accept-charset="UTF-8" enctype="application/x-www-form-urlencoded" autocomplete="off" novalidate>
-          <input class="mail" type="url" name="url" autocomplete="off" placeholder="http://example.com" value="http://">
+          <input class="url" type="url" name="url" autocomplete="off" placeholder="http://example.com" value="http://">
           <input type="hidden" name="output" value="html">
+        </form>
+        <div class="success-message"></div>
+			  <div class="error-message"></div>
+      </div>
+      <div class="form wow fadeInUp" data-wow-delay="0.3s">
+        &nbsp;
+        <form class="subscribe-form wow zoomIn" action="/" method="get" accept-charset="UTF-8" enctype="application/x-www-form-urlencoded" autocomplete="off" novalidate>
           <input class="run-audit" type="submit" value="Run Audit" formaction="/api/analyze">
           <input class="make-accessible" type="submit" value="Make Accessible" formaction="/api/diff">
         </form>
