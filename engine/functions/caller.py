@@ -33,6 +33,9 @@ def compose_pipeline(function_names):
     Return:
         <function> Curried pipelined function calls the snippet will go through
     """
+    if len(function_names) == 0:
+        return lambda x: x
+
     function_list = tuple(_import_function(name) for name in function_names)
 
     def compose(acc, x, function_list):
