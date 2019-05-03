@@ -59,6 +59,7 @@ keys/
 .cache
 .tox/
 _mailinglist
+tags
 
 # Project Specific
 result.html
