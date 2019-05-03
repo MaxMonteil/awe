@@ -99,14 +99,31 @@ def diff():
     loop.run_until_complete(engine.run_engine())
 
     soup = BeautifulSoup(open("dist/diff.html"),'html.parser')
-
+    
+    oldString = BeautifulSoup(engine.site_html.getvalue().decode('UTF-8'),'html.parser')
+    
+    for script in oldString.findAll('script'):
+       script.decompose()
+    for style in oldString.findAll('style'):
+       style.decompose()
     old = soup.find("div",{"id":"old"})
 
-    old.string = engine.site_html.getvalue().decode('UTF-8')
+    old.string = str(oldString)
 
+
+    newString = BeautifulSoup(engine.accessible_site.getvalue().decode('UTF-8'),'html.parser')
     new = soup.find("div",{"id":"new"})
 
-    new.string = engine.accessible_site.getvalue().decode('UTF-8')
+    for script in newString.findAll('script'):
+       script.decompose()
+    for style in newString.findAll('style'):
+       style.decompose()
+
+    old.string = str(oldString)
+    new.string = str(newString)
+
+    download = soup.find("a",{"id":"downloadlink"})
+    download["href"] = "/api/run_engine?url="+target_url
     byte_html = BytesIO()
     byte_html.write(soup.encode())
     byte_html.seek(0)

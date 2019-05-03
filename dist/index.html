@@ -77,6 +77,28 @@
           </div>
         </div>
 
+    
+<!-- API Engine -->
+  <div class="cta-sub text-center no-color">
+    <div class="container">
+        <hr>
+      <h1 class="wow fadeInUp" data-wow-delay="0s">Developer API</h1>
+        <p class="wow fadeInUp" data-wow-delay="0.2s">
+        Generate an accessible version of your web page using our API. <br class="hidden-xs"> You will recieve an optimized accessible version of your webpage.
+        </p>
+      <div class="form wow fadeInUp" data-wow-delay="0.3s">
+        <form id="siteform" class="subscribe-form wow zoomIn" action="/" method="get" accept-charset="UTF-8" enctype="application/x-www-form-urlencoded" autocomplete="off" novalidate>
+          <input class="mail" type="url" name="url" autocomplete="off" placeholder="http://example.com" value="http://">
+          <input type="hidden" name="output" value="html">
+          <input class="run-audit" type="submit" value="Run Audit" formaction="/api/analyze">
+          <input class="make-accessible" type="submit" value="Make Accessible" formaction="/api/diff">
+        </form>
+        <div class="success-message"></div>
+			  <div class="error-message"></div>
+      </div>
+    </div>
+  </div>
+
 
         <!-- API Engine -->
         <div class="cta-sub text-center no-color">
@@ -128,11 +150,18 @@
           </div>
         </div>
 
+
         <!-- Scroll To Top -->
 
         <a id="back-top" class="back-to-top page-scroll" href="#main">
           <i class="ion-ios-arrow-thin-up"></i>
         </a>
+
+      </div>
+      </div>
+    </div>
+  <!-- Scroll To Top -->
+
 
         <!-- Scroll To Top Ends-->
 
@@ -148,5 +177,6 @@
     <script type="text/javascript" src="assets/js/custom.js"></script>
     <script type="text/javascript" src="assets/js/script.js"></script>
 </body>
+
 
 </html>

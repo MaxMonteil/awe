@@ -1,5 +1,7 @@
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 <style>
 ins {
     text-decoration: none;
@@ -11,9 +13,29 @@ del {
     background-color: #fbb6c2;
     color: #555;
 }
+
+.float{
+	position:fixed;
+	width:60px;
+	height:60px;
+	bottom:40px;
+	right:40px;
+	background-color:#0C9;
+	color:#FFF;
+	border-radius:50px;
+	text-align:center;
+	box-shadow: 2px 2px 3px #999;
+}
+
+.my-float{
+	margin-top:22px;
+}
 </style>
 </head>
 <body>
+<a id="downloadlink" href="#" class="float">
+<i class="fa fa-download my-float"></i>
+</a>
 <div id="old" style="display:none"></div>
 <div id="new" style="display:none"></div>
 <div id="output"></div>
