@@ -63,13 +63,3 @@ def num_length(full):
     while length < len(full) and (is_int(full[length]) or full[length] == "."):
         length += 1
     return length
-
-
-html = {
-    "snippet": BeautifulSoup(
-        """<meta name="viewport" content="user-scalable=no,initial-scale=1,maximum-scale=1">""",
-        "html.parser",
-    ),
-    "other": "random thing",
-}
-print(run(html)["snippet"].prettify())
