@@ -15,7 +15,6 @@ INDIRECT_FUNCTIONS = (
     "color-contrast",
     "definition-list",
     "dlitem",
-    "document-title",
     "duplicate-id",
     "frame-title",
     "html-lang",
@@ -38,7 +37,7 @@ INDIRECT_FUNCTIONS = (
 )
 
 # Functions that work by directly modifying the original HTML
-DIRECT_FUNCTIONS = ("meta-refresh",)
+DIRECT_FUNCTIONS = ("document-title", "meta-refresh")
 
 AWE_FUNCTIONS = FunctionsList(
     INDIRECT_FUNCTIONS, DIRECT_FUNCTIONS, INDIRECT_FUNCTIONS + DIRECT_FUNCTIONS
