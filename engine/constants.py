@@ -4,7 +4,7 @@
 
 from collections import namedtuple
 
-FunctionsList = namedtuple("FUNCTIONS", ["INDIRECT", "DIRECT"])
+FunctionsList = namedtuple("FUNCTIONS", ["INDIRECT", "DIRECT", "ALL"])
 
 # Functions that work by receiving then fixing a faulty HTML tag
 INDIRECT_FUNCTIONS = (
@@ -40,4 +40,6 @@ INDIRECT_FUNCTIONS = (
 # Functions that work by directly modifying the original HTML
 DIRECT_FUNCTIONS = ("meta-refresh",)
 
-AWE_FUNCTIONS = FunctionsList(INDIRECT_FUNCTIONS, DIRECT_FUNCTIONS)
+AWE_FUNCTIONS = FunctionsList(
+    INDIRECT_FUNCTIONS, DIRECT_FUNCTIONS, INDIRECT_FUNCTIONS + DIRECT_FUNCTIONS
+)
