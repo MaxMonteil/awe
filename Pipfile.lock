@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "74fc954e37677d83bdb5458a7d844b8a525bdf870972e6d7c2e1bf6a047f3139"
+            "sha256": "733646df2c8c429ee7c2f809179835413531a8c5317c5583267089e0df647ba9"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -143,6 +143,12 @@
             ],
             "version": "==1.1.1"
         },
+        "nltk": {
+            "hashes": [
+                "sha256:3a64b1cb685bbf344adec416871fee07996671c876ff313b3e504158fa1500e1"
+            ],
+            "version": "==3.4.1"
+        },
         "pyee": {
             "hashes": [
                 "sha256:a9c9b60e8693a260dd942ef5a71358cfcbba15792d5e72caf0e3c891c4e91c3b",
@@ -156,6 +162,13 @@
             ],
             "index": "pypi",
             "version": "==0.0.25"
+        },
+        "rake-nltk": {
+            "hashes": [
+                "sha256:fe2b5d4422754f80f292763dac9e5be366af7a7a0431a621d79c603110cd004e"
+            ],
+            "index": "pypi",
+            "version": "==1.0.4"
         },
         "requests": {
             "hashes": [
