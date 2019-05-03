@@ -144,7 +144,11 @@ class Engine:
                 # get tag contents(children), filter out white-space, reassign from index
                 curr_tag = [tag for tag in curr_tag.contents if not str(tag).isspace()][i]
 
-            curr_tag.replace_with(snippet)
+            if curr_tag.children != 0:
+                curr_tag.wrap(snippet)
+                snippet.contents[0].unwrap()
+            else:
+                curr_tag.replace_with(snippet)
         except IndexError:
             # The crawler obtained a different site HTML than what Lighthouse did
             # causing a mismatch and thus an unreachable file
