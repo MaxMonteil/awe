@@ -2,7 +2,8 @@
 
 """Constant list of all AWE API functions."""
 
-AWE_FUNCTIONS = [
+# Functions that work by receiving then fixing a faulty HTML tag
+INDIRECT_FUNCTIONS = [
     "accesskeys",
     "audio-caption",
     "button-name",
@@ -21,14 +22,18 @@ AWE_FUNCTIONS = [
     "layout-table",
     "link-name",
     "list",
-    "list-item",
-    "meta-refresh",
+    "listitem",
     "meta-viewport",
     "object-alt",
     "tab-index",
     "td-headers-attr",
-    "th-data-cells",
+    "th-has-data-cells",
     "valid-lang",
     "video-caption",
     "video-description",
 ]
+
+# Functions that work by directly modifying the original HTML
+DIRECT_FUNCTIONS = ["meta-refresh"]
+
+AWE_FUNCTIONS = INDIRECT_FUNCTIONS + DIRECT_FUNCTIONS
