@@ -101,8 +101,13 @@ class Engine:
         """
         await asyncio.gather(self.run_analysis(), self.run_crawler())
 
-        fixed_tags = (Caller.run_pipeline(tag) for tag in self._lighthouse.failing_tags)
+        fixed_tags = (
+            Caller.run_pipeline(tag) for tag in self._lighthouse.failed_audits.indirect
+        )
         self._reassemble_site(fixed_tags)
+
+        direct_pipeline = Caller.compose_pipeline(self._lighthouse.failed_audits.direct)
+        direct_pipeline(self._crawler.html_soup)
 
         # All offending tags will have now been replaced, save to bytes for transfer
         byte_html = BytesIO()
