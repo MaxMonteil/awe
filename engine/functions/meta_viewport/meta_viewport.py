@@ -18,7 +18,7 @@ def run(tag_data):
         snippet["content"].replace("user-scalable=no", "")
     # Sets "maximum-scale" to be at least = 2
     if not "maximum-scale" in snippet["content"]:
-        snippet["contnet"] = snippet["content"] + ",maximum-scale=2"
+        snippet["content"] = snippet["content"] + ",maximum-scale=2"
     scaleIndexStart = first_int(
         snippet["content"][snippet["content"].find("maximum-scale") + 14 :]
     )
