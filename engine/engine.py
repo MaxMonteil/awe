@@ -16,6 +16,7 @@ from . import constants
 from .crawler import Crawler
 from .functions import caller as Caller
 from .lighthouse import Lighthouse
+from collections import namedtuple
 from io import BytesIO
 import asyncio
 
@@ -101,15 +102,18 @@ class Engine:
         """
         await asyncio.gather(self.run_analysis(), self.run_crawler())
 
+        # Cylinder 1: Indirect functions
         fixed_tags = (
             Caller.run_pipeline(tag) for tag in self._lighthouse.failed_audits.indirect
         )
         self._reassemble_site(fixed_tags)
 
-        direct_pipeline = Caller.compose_pipeline(self._lighthouse.failed_audits.direct)
-        direct_pipeline(self._crawler.html_soup)
+        # Cylinder 2: Direct functions
+        html_and_tag = namedtuple("html_and_tag", ["html", "tag_data"])
+        for tag in self._lighthouse.failed_audits.direct:
+            Caller.run_pipeline(html_and_tag(html=self._crawler.html_soup, tag_data=tag))
 
-        # All offending tags will have now been replaced, save to bytes for transfer
+        # All failing snippets will have now been replaced, save to bytes for transfer
         byte_html = BytesIO()
         byte_html.write(self._crawler.html_soup.encode())
         byte_html.seek(0)
@@ -135,6 +139,8 @@ class Engine:
         Navigates the HTML tree down to the tag and replaces it with the fixed snippet.
         """
         curr_tag = self._crawler.html_soup
+        print(snippet)
+        print(path)
         for i in path:
             # get tag contents(children), filter out white-space, reassign from index
             curr_tag = [tag for tag in curr_tag.contents if not str(tag).isspace()][i]

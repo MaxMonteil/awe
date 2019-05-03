@@ -8,21 +8,29 @@ from bs4 import BeautifulSoup
 import importlib
 
 
-def run_pipeline(tag):
+def run_pipeline(data):
     """
     Main method to run each tag through its pipeline.
 
     Parameters:
-        tag <dict> Contains the HTML snippet along with a str list of its pipeline
+        data <dict> Contains the HTML snippet along with a str list of its pipeline
 
     Return:
-        <dict> The same tag but with the snippet fixed
+        <dict> The same data but with the snippet fixed
     """
-    tag["snippet"] = BeautifulSoup(tag["snippet"], "html.parser").find()
-    return compose_pipeline(tag["pipeline"])(tag)
+    if type(data) is dict:
+        # running pipeline of indirect functions
+        data["snippet"] = BeautifulSoup(data["snippet"], "html.parser").find()
+
+        return _compose_pipeline(data["pipeline"])(data)
+    else:
+        # running pipeline of direct functions
+        data.tag_data["snippet"] = BeautifulSoup(data.tag_data["snippet"], "html.parser").find()
+
+        return _compose_pipeline(data.tag_data["pipeline"])(data)
 
 
-def compose_pipeline(function_names):
+def _compose_pipeline(function_names):
     """
     Changes the str list of function names into curried pipeline function
     ['a', 'b', 'c'] -> a.run(b.run(c.run(x)))
