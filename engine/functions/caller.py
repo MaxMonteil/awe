@@ -19,10 +19,10 @@ def run_pipeline(tag):
         <dict> The same tag but with the snippet fixed
     """
     tag["snippet"] = BeautifulSoup(tag["snippet"], "html.parser").find()
-    return _compose_pipeline(tag["pipeline"])(tag)
+    return compose_pipeline(tag["pipeline"])(tag)
 
 
-def _compose_pipeline(function_names):
+def compose_pipeline(function_names):
     """
     Changes the str list of function names into curried pipeline function
     ['a', 'b', 'c'] -> a.run(b.run(c.run(x)))
