@@ -1,4 +1,3 @@
-
 """Adds the missing lang on <html> tag. Note: if the webpage has multiple languages in the same text, 
 this function does NOT add a <span> tag to wrap the text that is in a different language than the html page"""
 
@@ -7,6 +6,7 @@ from langdetect import detect
 from collections import namedtuple
 
 TEXT_TAGS = ["p", "h1", "h2", "h3", "h4", "b", "i", "title", "a", "input"]
+
 
 def run(data):
     """
@@ -18,9 +18,12 @@ def run(data):
         data <namedtuple> With the fixed full HTML
     """
     lang = detect(find_text(data.html))
-    if (not data.html.find("html").has_attr("lang")) or data.html.find("html")["lang"] != lang:
-       data.html.find("html")["lang"] = lang
+    if (not data.html.find("html").has_attr("lang")) or data.html.find("html")[
+        "lang"
+    ] != lang:
+        data.html.find("html")["lang"] = lang
     return data
+
 
 def find_text(bs):
     """
@@ -35,7 +38,9 @@ def find_text(bs):
     for tag in TEXT_TAGS:
         if tag == "input":
             for htmlTag in bs.find_all(tag):
-                text += htmlTag["placeholder"] if htmlTag.has_attr("placeholder") else ""
+                text += (
+                    htmlTag["placeholder"] if htmlTag.has_attr("placeholder") else ""
+                )
         else:
             for htmlTag in bs.find_all(tag):
                 text += htmlTag.get_text() + " "
