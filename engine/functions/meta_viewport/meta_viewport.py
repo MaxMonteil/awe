@@ -12,16 +12,15 @@ def run(tag_data):
     Return:
         <dict> Data of the fixed tag
     """
-    snippet = tag_data["snippet"].replace(" ", "")
+    snippet = tag_data["snippet"]
+    snippet["content"] = snippet["content"].replace(" ", "")
     # Remove "user-scalable=no if exists in the "content" attribute
     if "user-scalable=no" in snippet["content"]:
         snippet["content"].replace("user-scalable=no", "")
     # Sets "maximum-scale" to be at least = 2
     if not "maximum-scale" in snippet["content"]:
         snippet["content"] = snippet["content"] + ",maximum-scale=2"
-    scaleIndexStart = first_int(
-        snippet["content"][snippet["content"].find("maximum-scale") + 14 :]
-    )
+    scaleIndexStart = snippet["content"].find("maximum-scale") + 14
     scaleIndexEnd = scaleIndexStart + num_length(snippet["content"][scaleIndexStart:])
     scale = int(snippet["content"][scaleIndexStart:scaleIndexEnd])
     scale = 2 if scale < 2 else scale
@@ -64,22 +63,3 @@ def num_length(full):
     while is_int(full[length]) or full[length] == ".":
         length += 1
     return length
-
-
-def first_int(full):
-    """
-    Helper function to find the first integer in a string, but only
-    searches in the first 5 characters of the string
-
-    Parameters:
-        full <string> The desired string to look in
-    Return:
-        <int> Index of the first int
-    """
-    for i in range(5):
-        if is_int(full[i]):
-            return i
-        else:
-            raise Exception(
-                "String must have an int in the first 5 characters: {}".format(full[:6])
-            )
