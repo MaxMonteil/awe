@@ -7,7 +7,6 @@ then lightens/darkens the text until the contrast is enough for AA WCAG.
 If changing the text color wasn't enough it will darken/lighen the
 background color until the contrast is enough for AA WCAG.
 """
-from bs4 import BeautifulSoup
 import wcag_contrast_ratio as contrast
 
 

@@ -43,7 +43,11 @@ class Crawler:
                 handleSIGINT=False, handleSIGTERM=False, handleSIGHUP=False
             )
             page = await browser.newPage()
-            await page.goto(self._target_url, timeout=0)
+            await page.goto(
+                self._target_url,
+                timeout=0,
+                waitUntil=["networkidle0", "load", "domcontentloaded"],
+            )
             content = await page.content()
 
             # Raw HTML should be treated as a file in case of transfer

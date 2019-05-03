@@ -16,6 +16,7 @@ from . import constants
 from .crawler import Crawler
 from .functions import caller as Caller
 from .lighthouse import Lighthouse
+from collections import namedtuple
 from io import BytesIO
 import asyncio
 
@@ -101,10 +102,20 @@ class Engine:
         """
         await asyncio.gather(self.run_analysis(), self.run_crawler())
 
-        fixed_tags = (Caller.run_pipeline(tag) for tag in self._lighthouse.failing_tags)
+        # Cylinder 1: Indirect functions
+        fixed_tags = (
+            Caller.run_pipeline(tag) for tag in self._lighthouse.failed_audits.indirect
+        )
         self._reassemble_site(fixed_tags)
 
-        # All offending tags will have now been replaced, save to bytes for transfer
+        # Cylinder 2: Direct functions
+        html_and_tag = namedtuple("html_and_tag", ["html", "tag_data"])
+        for tag in self._lighthouse.failed_audits.direct:
+            Caller.run_pipeline(
+                html_and_tag(html=self._crawler.html_soup, tag_data=tag)
+            )
+
+        # All failing snippets will have now been replaced, save to bytes for transfer
         byte_html = BytesIO()
         byte_html.write(self._crawler.html_soup.encode())
         byte_html.seek(0)
@@ -137,7 +148,11 @@ class Engine:
                     i
                 ]
 
-            curr_tag.replace_with(snippet)
+            if curr_tag.children != 0:
+                curr_tag.wrap(snippet)
+                snippet.contents[0].unwrap()
+            else:
+                curr_tag.replace_with(snippet)
         except IndexError:
             # The crawler obtained a different site HTML than what Lighthouse did
             # causing a mismatch and thus an unreachable file
