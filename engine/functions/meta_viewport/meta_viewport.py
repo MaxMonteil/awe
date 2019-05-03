@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 
+
 def run(tag_data):
     """
     Ensures that the user-scalable="no" parameter is not present in 
@@ -11,27 +12,25 @@ def run(tag_data):
     Return:
         <dict> Data of the fixed tag
     """
-    snippet = tag_data["snippet"]
+    snippet = tag_data["snippet"].replace(" ", "")
     # Remove "user-scalable=no if exists in the "content" attribute
-    if "user-scalable" in snippet["content"]:
-        start = snippet["content"].find("user-scalable")
-        end = snippet["content"].find("no", start) + 2
-        end += 1 if snippet["content"][end+1] == "," else 0
-        snippet["content"] = snippet["content"].replace(
-            snippet["content"][start:end], "")
+    if "user-scalable=no" in snippet["content"]:
+        snippet["content"].replace("user-scalable=no", "")
     # Sets "maximum-scale" to be at least = 2
     if not "maximum-scale" in snippet["content"]:
-        snippet["contnet"] = snippet["content"] + ", maximum-scale=2"
+        snippet["contnet"] = snippet["content"] + ",maximum-scale=2"
     scaleIndexStart = first_int(
-        snippet["content"][snippet["content"].find("maximum-scale")+14:])
-    scaleIndexEnd = scaleIndexStart + \
-        num_length(snippet["content"][scaleIndexStart:])
+        snippet["content"][snippet["content"].find("maximum-scale") + 14 :]
+    )
+    scaleIndexEnd = scaleIndexStart + num_length(snippet["content"][scaleIndexStart:])
     scale = int(snippet["content"][scaleIndexStart:scaleIndexEnd])
     scale = 2 if scale < 2 else scale
     snippet["content"] = snippet["content"].replace(
-        snippet["content"][scaleIndexStart:scaleIndexEnd], scale)
+        snippet["content"][scaleIndexStart:scaleIndexEnd], scale
+    )
     tag_data["snippet"] = snippet
     return tag_data
+
 
 def is_int(n):
     """
@@ -48,6 +47,7 @@ def is_int(n):
     except:
         return False
 
+
 def num_length(full):
     """
     Helper function which, given a string and a starting index, 
@@ -61,9 +61,10 @@ def num_length(full):
         <int> The number of characters of the number
     """
     length = 0
-    while(is_int(full[length]) or full[length]=='.'):
+    while is_int(full[length]) or full[length] == ".":
         length += 1
     return length
+
 
 def first_int(full):
     """
@@ -79,4 +80,6 @@ def first_int(full):
         if is_int(full[i]):
             return i
         else:
-            raise Exception('String must have an int in the first 5 characters: {}'.format(full[:6]))
+            raise Exception(
+                "String must have an int in the first 5 characters: {}".format(full[:6])
+            )
