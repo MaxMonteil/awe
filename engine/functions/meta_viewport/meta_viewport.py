@@ -65,6 +65,11 @@ def num_length(full):
     return length
 
 
-html = {"snippet": BeautifulSoup(
-    """<meta name="viewport" content="user-scalable=no,initial-scale=1,maximum-scale=1">""", "html.parser"), "other": "random thing"}
+html = {
+    "snippet": BeautifulSoup(
+        """<meta name="viewport" content="user-scalable=no,initial-scale=1,maximum-scale=1">""",
+        "html.parser",
+    ),
+    "other": "random thing",
+}
 print(run(html)["snippet"].prettify())
