@@ -17,11 +17,17 @@ def run(html):
         title tag <BeautifulSoup>
     """
     soup = html
-    text = [p.get_text() for p in soup.find_all("p", text=True)]  # filters out the text
-    fix = title(text)  # the title in string format
-    tag = BeautifulSoup("<title>" + fix + "</title>", "html.parser")
-    soup.head.append(tag)
-    return soup  # returns modified html
+    count = 0
+    text = [p.get_text() for p in soup.find_all("p", text=True)]  # text extraction line (should be string or list of words)
+    for word in text:
+        count += 1
+    if count >= 250:
+        fix = title(text)  # the title in string format
+        tag = BeautifulSoup("<title>" + fix + "</title>", "html.parser")
+        soup.head.append(tag)
+        return soup  # returns modified html
+    else:
+        return soup
 
 
 def title(text):
