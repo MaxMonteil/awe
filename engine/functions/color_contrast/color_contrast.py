@@ -21,10 +21,9 @@ def run(tag_data):
     to increase the contrast.
 
     Parameters:
-        html <list> Dictionaries with HTML snippets as strings and hexadecimal
-            color of the background and foreground
+        tag_data <dict> Data of the faulty tag
     Return:
-        <list> List of beautiful soup tags with proper CSS contrast elements and their path
+        <dict> Data of the fixed tag
     """
     back = hex_to_rgb(tag_data["colors"]["background"])
     fore = hex_to_rgb(tag_data["colors"]["foreground"])  # Text color
@@ -87,7 +86,7 @@ def run(tag_data):
         cond["notLightest"] = max(back) < RGB_LIMIT or not backLight
         cond["notDarkest"] = all(back) or backLight
 
-    snippet = tag_data["snippet"]
+    snippet = tag_data["snippet"][0]
     if not snippet.has_attr("style"):
         snippet["style"] = ""
 
@@ -115,7 +114,7 @@ def run(tag_data):
     snippet["style"] += f"color: #{rgb_to_hex(fore)}; "
     snippet["style"] += f"background: #{rgb_to_hex(back)}; " if backChanged else ""
 
-    tag_data["snippet"] = snippet
+    tag_data["snippet"][0] = snippet
 
     return tag_data
 

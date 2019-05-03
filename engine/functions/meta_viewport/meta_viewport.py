@@ -12,7 +12,7 @@ def run(tag_data):
     Return:
         <dict> Data of the fixed tag
     """
-    snippet = tag_data["snippet"].find()
+    snippet = tag_data["snippet"][0].find()
     snippet["content"] = snippet["content"].replace(" ", "")
     # Remove "user-scalable=no if exists in the "content" attribute
     if "user-scalable=no" in snippet["content"]:
@@ -27,7 +27,7 @@ def run(tag_data):
     snippet["content"] = snippet["content"].replace(
         snippet["content"][scaleIndexStart:scaleIndexEnd], str(scale)
     )
-    tag_data["snippet"] = snippet
+    tag_data["snippet"][0] = snippet
     return tag_data
 
 
