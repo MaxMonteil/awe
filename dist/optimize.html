@@ -3,20 +3,55 @@
   <head>
     <meta charset="utf-8">
     <title>Accessibility Web Engine</title>
-    <link rel="icon" href="assets/logos/favicon.png" type="image/png" sizes="50x50">
+    <link rel="icon" href="/static/assets/logos/favicon.png" type="image/png" sizes="50x50">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Accessibility Web Engine">
     <meta name="keywords" content="Accessibility Web Engine">
-    <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link href="/static/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Poppins:400,300,500,700,600" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="assets/css/animate.css"> <!-- Resource style -->
-    <link rel="stylesheet" href="assets/css/owl.carousel.css">
-    <link rel="stylesheet" href="assets/css/owl.theme.css">
-    <link rel="stylesheet" href="assets/css/magnific-popup.css">
-    <link rel="stylesheet" href="assets/css/animsition.min.css">
-    <link rel="stylesheet" href="assets/css/ionicons.min.css"> <!-- Resource style -->
-    <link href="assets/css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <link rel="stylesheet" href="/static/assets/css/animate.css"> <!-- Resource style -->
+    <link rel="stylesheet" href="/static/assets/css/owl.carousel.css">
+    <link rel="stylesheet" href="/static/assets/css/owl.theme.css">
+    <link rel="stylesheet" href="/static/assets/css/magnific-popup.css">
+    <link rel="stylesheet" href="/static/assets/css/animsition.min.css">
+    <link rel="stylesheet" href="/static/assets/css/ionicons.min.css"> <!-- Resource style -->
+    <link href="/static/assets/css/style.css" rel="stylesheet" type="text/css" media="all" />
+    <style>
+ins {
+    text-decoration: none;
+    background-color: #d4fcbc;
+}
+
+del {
+    text-decoration: line-through;
+    background-color: #fbb6c2;
+    color: #555;
+}
+
+.float{
+        position:fixed;
+        width:60px;
+        height:60px;
+        bottom:40px;
+        right:40px;
+        background-color:#4287ff;
+        color:#FFF;
+        border-radius:50px;
+        text-align:center;
+        box-shadow: 2px 2px 3px #999;
+}
+
+.my-float{
+        margin-top:22px;
+}
+.card {
+padding:0 !important;
+text-align:left !important;
+overflow: hidden !important;
+}
+</style>
   </head>
   <body>
     <div class="wrapper animsition" data-animsition-in-class="fade-in"
@@ -34,21 +69,25 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-              <a class="navbar-brand page-scroll" href="#main"><img src="assets/logos/logo.png" height="35" width="35" alt="Mu" /></a>
+              <a class="navbar-brand page-scroll" href="#main"><img src="/static/assets/logos/logo.png" height="35" width="35" alt="Mu" /></a>
               </div>
                 <!-- Collect the nav links, forms, and other content for toggling -->
               <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="services.html">Services</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="services">Services</a></li>
+                    <li><a href="about">About</a></li>
+                    <li><a href="contact">Contact</a></li>
                 </ul>
             </div>
           </div>
         </nav><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
-
+     <a id="downloadlink" href="#" class="float">
+<i class="fa fa-download my-float"></i>
+</a>
+<div id="old" style="display:none"></div>
+<div id="new" style="display:none"></div>
     <div class="main" id="main"><!-- Main Section-->
       <div class="hero-section app-hero">
         <div class="pricing-section no-color text-center" id="services">
@@ -60,7 +99,7 @@
                 <div class="row">
                   <div class="column">
                     <div class="select">
-                    <div class="card"></div>
+                    <div class="card" id="output"></div>
                   </div></div>
               </div>
             </div>      
@@ -78,7 +117,7 @@
         Don't worry, we won't spam your inbox. We will just notify you <br class="hidden-xs"> of important updates and major product releases.
         </p>
       <div class="form wow fadeInUp" data-wow-delay="0.3s">
-        <form class="subscribe-form wow zoomIn" action="assets/php/subscribe.php" method="post" accept-charset="UTF-8" enctype="application/x-www-form-urlencoded" autocomplete="off" novalidate>
+        <form class="subscribe-form wow zoomIn" action="/static/assets/php/subscribe.php" method="post" accept-charset="UTF-8" enctype="application/x-www-form-urlencoded" autocomplete="off" novalidate>
           <input class="mail" type="email" name="email" placeholder="Enter your email" autocomplete="off"><input class="submit-button" type="submit" value="Subscribe">
         </form>
         <div class="success-message"></div>
@@ -92,7 +131,7 @@
 <div class="footer">
   <div class="container">
       <div class="col-md-12 text-center">
-        <img class="img-circle" src="assets/logos/logo.png" width="40" height="40" alt="" />
+        <img class="img-circle" src="/static/assets/logos/logo.png" width="40" height="40" alt="" />
         <ul class="footer-menu">
           <li><a href="#">Home</a></li>
           <li><a href="#">About</a></li>
@@ -120,11 +159,13 @@
   </div><!-- Wrapper-->
 
 <!-- Jquery and Js Plugins -->
-  <script type="text/javascript" src="assets/js/jquery-2.1.1.js"></script>
-  <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="assets/js/plugins.js"></script>
-  <script type="text/javascript" src="assets/js/menu.js"></script>
-  <script type="text/javascript" src="assets/js/custom.js"></script>
-  <script type="text/javascript" src="assets/js/script.js"></script>
+  <script type="text/javascript" src="/static/assets/js/jquery-2.1.1.js"></script>
+  <script type="text/javascript" src="/static/assets/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/static/assets/js/plugins.js"></script>
+  <script type="text/javascript" src="/static/assets/js/menu.js"></script>
+  <script type="text/javascript" src="/static/assets/js/custom.js"></script>
+  <script type="text/javascript" src="/static/assets/js/script.js"></script>
+<script src="/static/diff/htmldiff.js"></script>
+<script src="/static/diff/driver.js"></script>
   </body>
 </html>

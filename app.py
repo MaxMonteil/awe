@@ -33,7 +33,7 @@ def get_analysis():
         output_format = "json"
 
     print(f"Calling lighthouse on {target_url}")
-    engine = Engine(target_url=target_url,audit_format=output_format)
+    engine = Engine(target_url=target_url, audit_format=output_format)
 
     asyncio.set_event_loop(loop)
     loop.run_until_complete(engine.run_analysis())
@@ -50,6 +50,7 @@ def get_analysis():
             ),
             200,
         )
+
 
 @app.route("/api/crawl")
 def crawl():
@@ -89,6 +90,7 @@ def awe():
         200,
     )
 
+
 @app.route("/api/diff")
 def diff():
     target_url = request.args.get("url", default="", type=str)
@@ -98,43 +100,43 @@ def diff():
     asyncio.set_event_loop(loop)
     loop.run_until_complete(engine.run_engine())
 
-    soup = BeautifulSoup(open("dist/diff.html"),'html.parser')
-    
-    oldString = BeautifulSoup(engine.site_html.getvalue().decode('UTF-8'),'html.parser')
-    
-    for script in oldString.findAll('script'):
-       script.decompose()
-    for style in oldString.findAll('style'):
-       style.decompose()
-    old = soup.find("div",{"id":"old"})
+    soup = BeautifulSoup(open("dist/optimize.html"), "html.parser")
+
+    oldString = BeautifulSoup(
+        engine.site_html.getvalue().decode("UTF-8"), "html.parser"
+    )
+
+    for script in oldString.findAll("script"):
+        script.decompose()
+    for style in oldString.findAll("style"):
+        style.decompose()
+    old = soup.find("div", {"id": "old"})
 
     old.string = str(oldString)
 
+    newString = BeautifulSoup(
+        engine.accessible_site.getvalue().decode("UTF-8"), "html.parser"
+    )
+    new = soup.find("div", {"id": "new"})
 
-    newString = BeautifulSoup(engine.accessible_site.getvalue().decode('UTF-8'),'html.parser')
-    new = soup.find("div",{"id":"new"})
-
-    for script in newString.findAll('script'):
-       script.decompose()
-    for style in newString.findAll('style'):
-       style.decompose()
+    for script in newString.findAll("script"):
+        script.decompose()
+    for style in newString.findAll("style"):
+        style.decompose()
 
     old.string = str(oldString)
     new.string = str(newString)
 
-    download = soup.find("a",{"id":"downloadlink"})
-    download["href"] = "/api/run_engine?url="+target_url
+    download = soup.find("a", {"id": "downloadlink"})
+    download["href"] = "/api/run_engine?url=" + target_url
     byte_html = BytesIO()
     byte_html.write(soup.encode())
     byte_html.seek(0)
     return (
-        send_file(
-            byte_html,
-            as_attachment=False,
-            attachment_filename="awe_site.html",
-        ),
+        send_file(byte_html, as_attachment=False, attachment_filename="awe_site.html"),
         200,
     )
+
 
 @app.route("/", defaults={"path": ""})
 # @app.route("/<path:path>")
@@ -143,12 +145,14 @@ def catch_all(path):
         return requests.get(f"http://localhost:8080/{path}").text
     return render_template("index.html")
 
+
 @app.route("/contact", defaults={"path": ""})
 # @app.route("/<path:path>")
 def contact(path):
     if app.debug:
         return requests.get(f"http://localhost:8080/{path}").text
     return render_template("contact.html")
+
 
 @app.route("/about", defaults={"path": ""})
 # @app.route("/<path:path>")
@@ -157,12 +161,22 @@ def about(path):
         return requests.get(f"http://localhost:8080/{path}").text
     return render_template("about.html")
 
+
 @app.route("/services", defaults={"path": ""})
 # @app.route("/<path:path>")
 def services(path):
     if app.debug:
         return requests.get(f"http://localhost:8080/{path}").text
     return render_template("services.html")
+
+
+@app.route("/k", defaults={"path": ""})
+# @app.route("/<path:path>")
+def k(path):
+    if app.debug:
+        return requests.get(f"http://localhost:8080/{path}").text
+    return render_template("optimize.html")
+
 
 if __name__ == "__main__":
     app.run(

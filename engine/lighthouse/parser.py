@@ -109,15 +109,16 @@ class ResponseParser:
             <dict> Mapping of useful values from the filtered response
         """
         for item in items:
-            yield {
-                "snippet": item["node"]["snippet"],
-                "selector": item["node"]["selector"],
-                "colors": self._extract_hex_codes(item["node"]["explanation"]),
-                "pipeline": [function_name],
-                # path is in the format "1,HTML,1,BODY,0,DIV,..."
-                # we only need to keep the numbers (as integers)
-                "path": tuple(int(i) for i in item["node"]["path"].split(",")[::2]),
-            }
+            if item["node"]["path"]:
+                yield {
+                    "snippet": item["node"]["snippet"],
+                    "selector": item["node"]["selector"],
+                    "colors": self._extract_hex_codes(item["node"]["explanation"]),
+                    "pipeline": [function_name],
+                    # path is in the format "1,HTML,1,BODY,0,DIV,..."
+                    # we only need to keep the numbers (as integers)
+                    "path": tuple(int(i) for i in item["node"]["path"].split(",")[::2]),
+                }
 
     def _pipeline_function_data(self, function_data_seq):
         """

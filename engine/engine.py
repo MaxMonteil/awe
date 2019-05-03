@@ -133,7 +133,9 @@ class Engine:
         try:
             for i in path:
                 # get tag contents(children), filter out white-space, reassign from index
-                curr_tag = [tag for tag in curr_tag.contents if not str(tag).isspace()][i]
+                curr_tag = [tag for tag in curr_tag.contents if not str(tag).isspace()][
+                    i
+                ]
 
             curr_tag.replace_with(snippet)
         except IndexError:
