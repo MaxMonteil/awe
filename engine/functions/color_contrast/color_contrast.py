@@ -7,7 +7,6 @@ then lightens/darkens the text until the contrast is enough for AA WCAG.
 If changing the text color wasn't enough it will darken/lighen the
 background color until the contrast is enough for AA WCAG.
 """
-from bs4 import BeautifulSoup
 import wcag_contrast_ratio as contrast
 
 
@@ -34,9 +33,7 @@ def run(tag_data):
     # Set initial conditions for the foreground text color
     cond = {
         "contrast": not contrast.passes_AA(
-            contrast.rgb(
-                [v / RGB_LIMIT for v in back], [v / RGB_LIMIT for v in fore]
-            )
+            contrast.rgb([v / RGB_LIMIT for v in back], [v / RGB_LIMIT for v in fore])
         ),
         "notLightest": max(fore) < RGB_LIMIT or backLight,
         "notDarkest": all(fore) or not backLight,
@@ -55,9 +52,7 @@ def run(tag_data):
         ]
 
         cond["contrast"] = not contrast.passes_AA(
-            contrast.rgb(
-                [v / RGB_LIMIT for v in back], [v / RGB_LIMIT for v in fore]
-            )
+            contrast.rgb([v / RGB_LIMIT for v in back], [v / RGB_LIMIT for v in fore])
         )
         cond["notLightest"] = max(fore) < RGB_LIMIT or backLight
         cond["notDarkest"] = all(fore) or not backLight
@@ -79,9 +74,7 @@ def run(tag_data):
         ]
 
         cond["contrast"] = not contrast.passes_AA(
-            contrast.rgb(
-                [v / RGB_LIMIT for v in back], [v / RGB_LIMIT for v in fore]
-            )
+            contrast.rgb([v / RGB_LIMIT for v in back], [v / RGB_LIMIT for v in fore])
         )
         cond["notLightest"] = max(back) < RGB_LIMIT or not backLight
         cond["notDarkest"] = all(back) or backLight

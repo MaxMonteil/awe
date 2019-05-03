@@ -19,7 +19,10 @@ class Lighthouse:
     response parser.
 
     Parameters:
-        function_names <list> List of all the supported a11y functions
+        function_names <namedtuple> Tuple of all the supported a11y functions
+            fields:
+                INDIRECT <tuple> A11y functions that accept and fix a snippet
+                DIRECT <tuple> A11y functions that change the original HMTL directly
         target_url <str> URL of the target website
         audit_format <str> Format in which lighthouse should return the audit
 
@@ -49,9 +52,9 @@ class Lighthouse:
         return json.dumps(self._parser.audit)
 
     @property
-    def failing_tags(self):
-        """Get the list of failing tags with their pipeline sorted by path length."""
-        return self._parser.failing_tags
+    def failed_audits(self):
+        """Collection of the audits that failed lighthouse tests."""
+        return self._parser.failed_audits
 
     @property
     def score(self):

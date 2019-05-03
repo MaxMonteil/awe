@@ -6,6 +6,8 @@ and organizing it according to AWE functions. It also offers the a list of faili
 with their function pipeline.
 """
 
+from collections import namedtuple
+
 
 class ResponseParser:
     """
@@ -14,11 +16,14 @@ class ResponseParser:
 
     Parameters:
         lighthouse_response <str> String response in JSON format
-        function_names <list> List of all the supported a11y functions
+        function_names <namedtuple> Tuple of all the supported a11y functions
+            fields:
+                INDIRECT <tuple> A11y functions that accept and fix a snippet
+                DIRECT <tuple> A11y functions that change the original HMTL directly
 
     Properties:
         audit <dict> Parsed response mapping data to appropriate AWE function
-        failing_tags <list> Tags with a list of their failing functions sorted by path
+        failed_audits <list> Tags with a list of their failing functions sorted by path
         score <int> Score given to the site by Lighthouse
     """
 
@@ -27,13 +32,14 @@ class ResponseParser:
         self._functions = function_names
         self._audit_data = None
         self._lh_score = None
+        self._parsed_tags = namedtuple("parsed_tags", ["indirect", "direct"])
 
     def parse_audit_data(self, force=False):
         """
         Parses the full lightouse response keeping only accessibility related
         information and additional values needed by the Engine.
 
-        Only needs to run once but it can be force to run again on the audit.
+        Only needs to run once but it can be forced to run again on the audit.
 
         Parameters:
             force <bool> Default False. If True will parse lighthouse audit again.
@@ -41,7 +47,7 @@ class ResponseParser:
         if not self._audit_data or force:
             self._lh_score = self._lh_response["categories"]["accessibility"]["score"]
             self._audit_data = dict(
-                self._parse_lighthouse_response(self._lh_response, self._functions)
+                self._parse_lighthouse_response(self._lh_response, self._functions.ALL)
             )
 
     @property
@@ -49,11 +55,26 @@ class ResponseParser:
         return self._audit_data
 
     @property
-    def failing_tags(self):
-        """Get the list of failing tags with their pipeline sorted by path length."""
+    def failed_audits(self):
+        """Collection of the audits that failed lighthouse tests."""
         try:
-            return self._pipeline_function_data(
-                item for data in self._audit_data.values() for item in data["items"]
+            return self._parsed_tags(
+                indirect=self._pipeline_function_data(
+                    (
+                        item
+                        for data in self._audit_data.values()
+                        for item in data["items"]
+                    ),
+                    self._functions.INDIRECT,
+                ),
+                direct=self._pipeline_function_data(
+                    (
+                        item
+                        for data in self._audit_data.values()
+                        for item in data["items"]
+                    ),
+                    self._functions.DIRECT,
+                ),
             )
         except AttributeError:
             return None
@@ -119,7 +140,7 @@ class ResponseParser:
                 "path": tuple(int(i) for i in item["node"]["path"].split(",")[::2]),
             }
 
-    def _pipeline_function_data(self, function_data_seq):
+    def _pipeline_function_data(self, function_data_seq, function_list):
         """
         Reduces the function data into a list of objects with the pipeline of the
         accessibility functions the tag needs to go through. It is sorted by path
@@ -133,14 +154,15 @@ class ResponseParser:
         """
         result = {}
         for data in function_data_seq:
-            try:
-                result[data["path"]]["pipeline"].extend(data["pipeline"])
-            except KeyError:
-                result[data["path"]] = data
-            finally:
-                # keep the "colors" value of the snippets that fail color-contrast
-                if data["pipeline"][0] == "color-contrast":
-                    result[data["path"]]["colors"] = data["colors"]
+            if data["pipeline"][0] in function_list:
+                try:
+                    result[data["path"]]["pipeline"].extend(data["pipeline"])
+                except KeyError:
+                    result[data["path"]] = data
+                finally:
+                    # keep the "colors" value of the snippets that fail color-contrast
+                    if data["pipeline"][0] == "color-contrast":
+                        result[data["path"]]["colors"] = data["colors"]
 
         return sorted(result.values(), key=lambda value: len(value["path"]))
 
