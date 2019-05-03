@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from bs4 import BeautifulSoup
 from string import ascii_letters, digits as ascii_digits
 
@@ -15,12 +16,12 @@ def run(tag_data):
     Return:
         <dict> Data of the fixed tag
     """
-    snippet = tag_data["snippet"][0]
+    snippet = tag_data["snippet"]
     
     alphanum_keys = available_keys(snippet)
     if (not snippet.has_attr("accesskey")) or snippet["accesskey"] == "":
         snippet["accesskey"] = alphanum_keys.pop()    
-    tag_data["snippet"][0] = snippet
+    tag_data["snippet"] = snippet
 
     return tag_data
 
