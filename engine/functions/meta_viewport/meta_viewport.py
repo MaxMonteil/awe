@@ -12,11 +12,11 @@ def run(tag_data):
     Return:
         <dict> Data of the fixed tag
     """
-    snippet = tag_data["snippet"]
+    snippet = tag_data["snippet"].find()
     snippet["content"] = snippet["content"].replace(" ", "")
     # Remove "user-scalable=no if exists in the "content" attribute
     if "user-scalable=no" in snippet["content"]:
-        snippet["content"].replace("user-scalable=no", "")
+        snippet["content"] = snippet["content"].replace("user-scalable=no", "")
     # Sets "maximum-scale" to be at least = 2
     if not "maximum-scale" in snippet["content"]:
         snippet["content"] = snippet["content"] + ",maximum-scale=2"
@@ -25,7 +25,7 @@ def run(tag_data):
     scale = int(snippet["content"][scaleIndexStart:scaleIndexEnd])
     scale = 2 if scale < 2 else scale
     snippet["content"] = snippet["content"].replace(
-        snippet["content"][scaleIndexStart:scaleIndexEnd], scale
+        snippet["content"][scaleIndexStart:scaleIndexEnd], str(scale)
     )
     tag_data["snippet"] = snippet
     return tag_data
@@ -52,7 +52,7 @@ def num_length(full):
     Helper function which, given a string and a starting index, 
     determines how many characters (if any) a number has starting
     at the given index
-    
+
     Parameters:
         full <string> The full containing string
         start <int> Starting index to look at
@@ -60,6 +60,11 @@ def num_length(full):
         <int> The number of characters of the number
     """
     length = 0
-    while is_int(full[length]) or full[length] == ".":
+    while length < len(full) and (is_int(full[length]) or full[length] == "."):
         length += 1
     return length
+
+
+html = {"snippet": BeautifulSoup(
+    """<meta name="viewport" content="user-scalable=no,initial-scale=1,maximum-scale=1">""", "html.parser"), "other": "random thing"}
+print(run(html)["snippet"].prettify())
