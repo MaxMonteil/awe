@@ -25,7 +25,9 @@ def run_pipeline(data):
         return _compose_pipeline(data["pipeline"])(data)
     else:
         # running pipeline of direct functions
-        data.tag_data["snippet"] = BeautifulSoup(data.tag_data["snippet"], "html.parser").find()
+        data.tag_data["snippet"] = BeautifulSoup(
+            data.tag_data["snippet"], "html.parser"
+        ).find()
 
         return _compose_pipeline(data.tag_data["pipeline"])(data)
 

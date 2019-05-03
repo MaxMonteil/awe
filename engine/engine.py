@@ -111,7 +111,9 @@ class Engine:
         # Cylinder 2: Direct functions
         html_and_tag = namedtuple("html_and_tag", ["html", "tag_data"])
         for tag in self._lighthouse.failed_audits.direct:
-            Caller.run_pipeline(html_and_tag(html=self._crawler.html_soup, tag_data=tag))
+            Caller.run_pipeline(
+                html_and_tag(html=self._crawler.html_soup, tag_data=tag)
+            )
 
         # All failing snippets will have now been replaced, save to bytes for transfer
         byte_html = BytesIO()
@@ -142,7 +144,9 @@ class Engine:
         try:
             for i in path:
                 # get tag contents(children), filter out white-space, reassign from index
-                curr_tag = [tag for tag in curr_tag.contents if not str(tag).isspace()][i]
+                curr_tag = [tag for tag in curr_tag.contents if not str(tag).isspace()][
+                    i
+                ]
 
             curr_tag.replace_with(snippet)
         except IndexError:

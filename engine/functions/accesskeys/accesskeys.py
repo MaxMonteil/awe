@@ -17,10 +17,10 @@ def run(tag_data):
         <dict> Data of the fixed tag
     """
     snippet = tag_data["snippet"]
-    
+
     alphanum_keys = available_keys(snippet)
     if (not snippet.has_attr("accesskey")) or snippet["accesskey"] == "":
-        snippet["accesskey"] = alphanum_keys.pop()    
+        snippet["accesskey"] = alphanum_keys.pop()
     tag_data["snippet"] = snippet
 
     return tag_data
@@ -39,9 +39,7 @@ def available_keys(tag):
     if tag.has_attr("accesskey"):
         if set(tag.get_attribute_list("accesskey")).issubset(alphanum_keys):
             # Removes already used accesskey values from the alphanumbet list
-            alphanum_keys.difference_update(
-                set(tag.get_attribute_list("accesskey"))
-            )
+            alphanum_keys.difference_update(set(tag.get_attribute_list("accesskey")))
         else:
             # This key was already removed and is a duplicate
             tag["accesskey"] = ""
