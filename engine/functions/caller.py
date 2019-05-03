@@ -20,16 +20,17 @@ from engine.functions.html_lang import html_lang as _html_lang
 from engine.functions.html_lang_valid import html_lang_valid as _html_lang_valid
 from engine.functions.image_alt import image_alt as _image_alt
 from engine.functions.input_image_alt import input_image_alt as _input_image_alt
+from engine.functions.list import list as _list
 from engine.functions.label import label as _label
 from engine.functions.layout_table import layout_table as _layout_table
 from engine.functions.link_name import link_name as _link_name
-from engine.functions.list_item import list_item as _list_item
+from engine.functions.listitem import listitem as _listitem
 from engine.functions.meta_refresh import meta_refresh as _meta_refresh
 from engine.functions.meta_viewport import meta_viewport as _meta_viewport
 from engine.functions.object_alt import object_alt as _object_alt
 from engine.functions.tab_index import tab_index as _tab_index
 from engine.functions.td_headers_attr import td_headers_attr as _td_headers_attr
-from engine.functions.th_data_cells import th_data_cells as _th_data_cells
+from engine.functions.th_has_data_cells import th_has_data_cells as _th_has_data_cells
 from engine.functions.valid_lang import valid_lang as _valid_lang
 from engine.functions.video_caption import video_caption as _video_caption
 from engine.functions.video_description import video_description as _video_description
@@ -51,15 +52,17 @@ _functions_mapping = {
     "image-alt": _image_alt,
     "input-image-alt": _input_image_alt,
     "label": _label,
+    "label": _label,
     "layout-table": _layout_table,
     "link-name": _link_name,
-    "list-item": _list_item,
+    "list": _list,
+    "listitem": _listitem,
     "meta-refresh": _meta_refresh,
     "meta-viewport": _meta_viewport,
     "object-alt": _object_alt,
     "tab-index": _tab_index,
     "td-headers-attr": _td_headers_attr,
-    "th-data-cells": _th_data_cells,
+    "th-has-data-cells": _th_has_data_cells,
     "valid-lang": _valid_lang,
     "video-caption": _video_caption,
     "video-description": _video_description,
