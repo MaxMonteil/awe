@@ -1268,7 +1268,7 @@ body {
   font-size: 0.9em;
   height: 40px;
   border: 2px solid;
-  border-radius: 0px 0px 0px 0px;
+  border-radius: 0 5px 5px 0;
   margin: 0;
   padding: 0 25px 0 25px;
 	border-color: #4287ff;
@@ -1281,7 +1281,7 @@ body {
   font-size: 0.9em;
   height: 40px;
   border: 2px solid;
-  border-radius: 0px 0px 0px 0px;
+  border-radius: 0 0px 0px 0;
   margin: 0;
   padding: 0 25px 0 25px;
 	border-color: #ff931e;
@@ -1294,7 +1294,7 @@ body {
   font-size: 0.9em;
   height: 40px;
   border: 2px solid;
-  border-radius: 0px 0px 0px 0px;
+  border-radius: 0 0px 0px 0;
   margin: 0;
   padding: 0 25px 0 25px;
 	border-color: #4287ff;
@@ -1922,4 +1922,47 @@ label {
 	.features-section-2 .features-content h2 {
 		margin-top: 10px;
 	}
+}
+
+{
+  box-sizing: border-box;
+}
+
+body {
+  font-family:Poppins;
+}
+
+/* Float four columns side by side */
+.column {
+	border-radius: 5px 5px 5px 5px
+  float: center;
+  width: 100%;
+	padding: 100 100px 100 100px;
+}
+
+ 
+/* Remove extra left and right margins, due to padding in columns */
+.row {margin: 0 0px;}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Style the counter cards */
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* this adds the "card" effect */
+  padding: 500px;
+  text-align: center;
+	background-color: #f1f1f1;
+	overflow:scroll
+}
+
+
+.select{
+	height:600px;
+	overflow-y: scroll;
+  overflow-x: hidden; 
 }
