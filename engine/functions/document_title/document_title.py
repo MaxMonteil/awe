@@ -3,8 +3,9 @@ from rake_nltk import Rake
 import nltk
 import random
 
+TEXT_TAGS = ["p", "h1", "h2", "h3", "h4", "b", "i", "title", "a"]
 
-def run(html):
+def run(data):
     """
     Adds a title to a webpage if it is missing one.
 
@@ -16,26 +17,24 @@ def run(html):
     Return:
         title tag <BeautifulSoup>
     """
-    soup = html
-    count = 0
-    text = [p.get_text() for p in soup.find_all("p", text=True)]  # text extraction line (should be string or list of words)
-    for word in text:
-        count += 1
-    if count >= 250:
+    text = find_text(data.html)  # text extraction line (should be string or list of words)
+    wordCount = 0
+    for item in text:
+        wordCount += len(item.split())
+    if wordCount >= 250:
         fix = title(text)  # the title in string format
         tag = BeautifulSoup("<title>" + fix + "</title>", "html.parser")
-        soup.head.append(tag)
-        return soup  # returns modified html
+        data.html.head.append(tag)
+        return data  # returns modified html
     else:
-        return soup
-
+        return data
 
 def title(text):
     """
     Extracts keywords from the HTML text and constructs a title.
 
     Parameters:
-        a list of texts contained in <p> tags
+        text <list> strings contained in tags
     Return:
         title <string>
     """
@@ -79,3 +78,19 @@ def title(text):
             + "."
         )  # constructs a string out of the most relevant keywords
         return title
+
+def find_text(bs):
+    """
+    Helper function that returns the text from a given BeautifulSoup object
+
+    Parameters:
+        bs <bs4> parent bs4 object
+    Return:
+        <string> 
+    """
+    texts = []
+    for tag in TEXT_TAGS:
+        for htmlTag in bs.find_all(tag):
+            texts.append(htmlTag.get_text())
+            
+    return texts
