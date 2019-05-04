@@ -19,6 +19,7 @@ from .lighthouse import Lighthouse
 from collections import namedtuple
 from io import BytesIO
 import asyncio
+from bs4 import BeautifulSoup, element
 
 
 class Engine:
@@ -144,10 +145,17 @@ class Engine:
                 # get tag contents(children), filter out white-space, reassign from index
                 curr_tag = [tag for tag in curr_tag.contents if not str(tag).isspace()][i]
 
-            if curr_tag.children != 0:
-                curr_tag.wrap(snippet)
-                snippet.contents[0].unwrap()
+            if snippet.isSelfClosing or snippet.is_empty_element:
+                curr_tag.replace_with(snippet)
             else:
+                for child in curr_tag.children:
+                    if not str(child).isspace():
+                        tag = str(child.extract())
+                        if type(child) is element.Tag:
+                            snippet.append(BeautifulSoup(tag, "html.parser").find())
+                        elif type(child) is element.NavigableString:
+                            snippet.string.replace_with(tag)
+
                 curr_tag.replace_with(snippet)
         except IndexError:
             # The crawler obtained a different site HTML than what Lighthouse did
