@@ -170,12 +170,12 @@ def services(path):
     return render_template("services.html")
 
 
-@app.route("/k", defaults={"path": ""})
+@app.route("/demo", defaults={"path": ""})
 # @app.route("/<path:path>")
-def k(path):
+def demo(path):
     if app.debug:
         return requests.get(f"http://localhost:8080/{path}").text
-    return render_template("optimize.html")
+    return render_template("before.html")
 
 
 if __name__ == "__main__":
