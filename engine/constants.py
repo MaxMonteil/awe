@@ -37,7 +37,7 @@ INDIRECT_FUNCTIONS = (
 )
 
 # Functions that work by directly modifying the original HTML
-DIRECT_FUNCTIONS = ("document-title", "meta-refresh")
+DIRECT_FUNCTIONS = ("document-title", "meta-refresh", "dlitem", "frame_title")
 
 AWE_FUNCTIONS = FunctionsList(
     INDIRECT_FUNCTIONS, DIRECT_FUNCTIONS, INDIRECT_FUNCTIONS + DIRECT_FUNCTIONS
