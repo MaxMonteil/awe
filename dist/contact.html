@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Accessibility Web Engine</title>
+    <link rel="icon" href="/static/assets/logos/favicon.png" type="image/png" sizes="50x50">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Accessibility Web Engine">
+    <meta name="keywords" content="Accessibility Web Engine">
+    <link href="/static/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,300,500,700,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/static/assets/css/animate.css"> <!-- Resource style -->
+    <link rel="stylesheet" href="/static/assets/css/animsition.min.css">
+    <link rel="stylesheet" href="/static/assets/css/owl.carousel.css">
+    <link rel="stylesheet" href="/static/assets/css/owl.theme.css">
+    <link rel="stylesheet" href="/static/assets/css/ionicons.min.css"> <!-- Resource style -->
+    <link href="/static/assets/css/style.css" rel="stylesheet" type="text/css" media="all" />
+  </head>
+  <body>
+    <div class="wrapper animsition" data-animsition-in-class="fade-in"
+      data-animsition-in-duration="1000"
+      data-animsition-out-class="fade-out"
+      data-animsition-out-duration="1000">
+        <div class="container">
+          <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+          <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+              <a class="navbar-brand page-scroll" href="#main"><img src="/static/assets/logos/logo.png" height="35" width="35" alt="Mu" /></a>
+              </div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+              <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="services">Services</a></li>
+                    <li><a href="about">About</a></li>
+                    <li><a class="page-scroll" href="contact">Contact</a></li>
+                </ul>
+              </div>
+            </div>
+          </nav><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+
+    <div class="main" id="main"><!-- Main Section-->
+    <div class="contact-section">
+      <div class="container">
+        <div class="col-md-9">
+          <h1>Contact Us</h1>
+          <p>
+            Email us with any questions or inquiries. Just ask and we'll reply <br class="hidden-xs"> within 24 hours unless it is a weekend.
+          </p>
+          <div class="contact-form">
+            <form id="contact-form" method="post" action="assets/php/contact.php" role="form">
+              <div class="messages"></div>
+              <div class="controls">
+              <div class="row">
+                  <div class="col-md-6">
+                      <div class="form-group">
+                          <label for="form_name">First Name *</label>
+                          <input id="form_name" type="text" name="name" class="form-control" placeholder="Please enter your first name *" required="required" data-error="First name is required.">
+                          <div class="help-block with-errors"></div>
+                      </div>
+                  </div>
+                  <div class="col-md-6">
+                      <div class="form-group">
+                          <label for="form_lastname">Last Name *</label>
+                          <input id="form_lastname" type="text" name="surname" class="form-control" placeholder="Please enter your last name *" required="required" data-error="Last name is required.">
+                          <div class="help-block with-errors"></div>
+                      </div>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-md-6">
+                      <div class="form-group">
+                          <label for="form_email">Email *</label>
+                          <input id="form_email" type="email" name="email" class="form-control" placeholder="Please enter your email *" required="required" data-error="Valid email is required.">
+                          <div class="help-block with-errors"></div>
+                      </div>
+                  </div>
+                  <div class="col-md-6">
+                      <div class="form-group">
+                          <label for="form_phone">Phone *</label>
+                          <input id="form_phone" type="tel" name="phone" class="form-control" placeholder="Please enter your phone number *"required="required" data-error="Valid phone number is required.">
+                          <div class="help-block with-errors"></div>
+                      </div>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-md-12">
+                      <div class="form-group">
+                          <label for="form_message">Message *</label>
+                          <textarea id="form_message" name="message" class="form-control" placeholder="Please enter your message *" rows="4" required="required" data-error="Please,leave us a message."></textarea>
+                          <div class="help-block with-errors"></div>
+                      </div>
+                  </div>
+                  <div class="col-md-12">
+                      <input type="submit" class="btn btn-success btn-send" value="Send message">
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+<!-- Footer Section -->
+<div class="footer">
+    <div class="container">
+        <div class="col-md-12 text-center">
+          <img class="img-circle" src="/static/assets/logos/logo.png" width="40" height="40" alt="" />
+          <ul class="footer-menu">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Terms</a></li>
+            <li><a href="#">Privacy</a></li>
+          </ul>
+        <div class="footer-text">
+          <p>
+            Copyright © 2019 AWE Accessibility Web Engine. All Rights Reserved.
+          </p>
+        </div>
+      </div>
+      </div>
+    </div>
+
+  <!-- Scroll To Top -->
+
+    <a id="back-top" class="back-to-top page-scroll" href="#main">
+    <i class="ion-ios-arrow-thin-up"></i>
+    </a>
+
+  <!-- Scroll To Top Ends-->
+
+    </div><!-- Main Section -->
+  </div><!-- Wrapper-->
+
+<!-- Jquery and Js Plugins -->
+  <script type="text/javascript" src="/static/assets/js/jquery-2.1.1.js"></script>
+  <script type="text/javascript" src="/static/assets/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/static/assets/js/plugins.js"></script>
+  <script type="text/javascript" src="/static/assets/js/menu.js"></script>
+  <script type="text/javascript" src="/static/assets/js/contact.js"></script>
+  <script type="text/javascript" src="/static/assets/js/validator.js"></script>
+  <script type="text/javascript" src="/static/assets/js/custom.js"></script>
+  </body>
+</html>
