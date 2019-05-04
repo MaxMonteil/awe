@@ -19,6 +19,7 @@ from .lighthouse import Lighthouse
 from collections import namedtuple
 from io import BytesIO
 import asyncio
+from bs4 import BeautifulSoup, element
 
 
 class Engine:
@@ -111,7 +112,9 @@ class Engine:
         # Cylinder 2: Direct functions
         html_and_tag = namedtuple("html_and_tag", ["html", "tag_data"])
         for tag in self._lighthouse.failed_audits.direct:
-            Caller.run_pipeline(html_and_tag(html=self._crawler.html_soup, tag_data=tag))
+            Caller.run_pipeline(
+                html_and_tag(html=self._crawler.html_soup, tag_data=tag)
+            )
 
         # All failing snippets will have now been replaced, save to bytes for transfer
         byte_html = BytesIO()
@@ -138,13 +141,24 @@ class Engine:
         """
         Navigates the HTML tree down to the tag and replaces it with the fixed snippet.
         """
-        curr_tag = self._crawler.html_soup
+        cur_tag = self._crawler.html_soup
         try:
             for i in path:
                 # get tag contents(children), filter out white-space, reassign from index
-                curr_tag = [tag for tag in curr_tag.contents if not str(tag).isspace()][i]
+                cur_tag = [tag for tag in cur_tag.contents if not str(tag).isspace()][i]
 
-            curr_tag.replace_with(snippet)
+            if snippet.isSelfClosing or snippet.is_empty_element:
+                cur_tag.replace_with(snippet)
+            else:
+                for child in cur_tag.children:
+                    if not str(child).isspace():
+                        tag = str(child.extract())
+                        if type(child) is element.Tag:
+                            snippet.append(BeautifulSoup(tag, "html.parser").find())
+                        elif type(child) is element.NavigableString:
+                            snippet.string.replace_with(tag)
+
+                cur_tag.replace_with(snippet)
         except IndexError:
             # The crawler obtained a different site HTML than what Lighthouse did
             # causing a mismatch and thus an unreachable file
