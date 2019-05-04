@@ -1,24 +1,24 @@
 from bs4 import BeautifulSoup
 
-
 def run(data):
     """
     Wraps <dd> and <dt> tags in <dl> tags.
 
-    Input:
-    Full HTML code <soup>
-    Output:
-    Full HTML code with fixed tags <soup>
+    Parameters:
+    data <namedtuple> includes the full (html) and the (tag_data)
+    Return:
+    data <namedtuple> with the full fixed (html) 
     """
-    soup = data.html
-    items(soup)
+    data.html = items(data.html)
+    return data
 
 def items(soup):
     """
     Finds <dt> and <dd> tags, makes <dl> a sibling, then inserts tags in <dl> tag.
-    Input:
+
+    Parameters:
     Full HTML code <soup>
-    Output:
+    Return:
     Full HTML code with fixed tags <soup>
     """
     tags = soup.find_all(['dt', 'dd'])
@@ -26,5 +26,4 @@ def items(soup):
     (tags[0].parent).append(dltag)
     for tag in tags:
         dltag.append(tag)
-    print(dltag.parent.parent)
     return soup
