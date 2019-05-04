@@ -47,6 +47,8 @@ class Engine:
             audit_format=audit_format,
         )
 
+        self._accessible_site = None
+
     async def run_analysis(self, force=False):
         """
         Runs a lighthouse analysis on the site.
@@ -78,27 +80,12 @@ class Engine:
         """Get the scraped HTML as a BytesIO file-like format for transfers."""
         return self._crawler.raw_html
 
-    def run_engine(self):
+    async def run_engine(self):
         """
         Main Engine entry point.
-        Crawls the target site to get it's HTML, runs the Lighthouse Audit on the site,
-        and fixes the issues flagged by the audit.
+        Crawls the target site to get it's HTML, runs the Lighthouse Audit on the site.
 
-        Returns:
-            <BytesIO> the accessible version of the site
-        """
-        fixed_tags = asyncio.run(self._run_functions(self._lighthouse.failing_tags))
-        self._reassemble_site(fixed_tags)
-
-        # All offending tags will have now been replaced, save to bytes for transfer
-        byte_html = BytesIO()
-        byte_html.write(self._crawler.html_soup.encode())
-        byte_html.seek(0)
-        return byte_html.getvalue()
-
-    async def _run_functions(self, failing_tags):
-        """
-        Organizes function calls sending them the proper HTML and Audit data.
+        Sends each tag through it's pipeline.
         Accessibility functions receive a dictionary with keys:
         ["colors", "selector", "snippet", "path"]
 
@@ -108,13 +95,24 @@ class Engine:
             "snippet"   failing HTML tag as a string
             "path"      HTML tree path to the snippet
             "pipeline"  List of the functions the snippet needs to go through
+
+        Returns:
+            <BytesIO> the accessible version of the site
         """
         await asyncio.gather(self.run_analysis(), self.run_crawler())
 
-        return (
-            {"snippet": Caller.run_pipeline(tag), "path": tag["path"]}
-            for tag in failing_tags
-        )
+        fixed_tags = (Caller.run_pipeline(tag) for tag in self._lighthouse.failing_tags)
+        self._reassemble_site(fixed_tags)
+
+        # All offending tags will have now been replaced, save to bytes for transfer
+        byte_html = BytesIO()
+        byte_html.write(self._crawler.html_soup.encode())
+        byte_html.seek(0)
+        self._accessible_site = byte_html
+
+    @property
+    def accessible_site(self):
+        return self._accessible_site
 
     def _reassemble_site(self, fixed_tags):
         """
@@ -132,8 +130,13 @@ class Engine:
         Navigates the HTML tree down to the tag and replaces it with the fixed snippet.
         """
         curr_tag = self._crawler.html_soup
-        for i in path:
-            # get tag contents(children), filter out white-space, reassign from index
-            curr_tag = [tag for tag in curr_tag.contents if not str(tag).isspace()][i]
+        try:
+            for i in path:
+                # get tag contents(children), filter out white-space, reassign from index
+                curr_tag = [tag for tag in curr_tag.contents if not str(tag).isspace()][i]
 
-        curr_tag.replace_with(snippet)
+            curr_tag.replace_with(snippet)
+        except IndexError:
+            # The crawler obtained a different site HTML than what Lighthouse did
+            # causing a mismatch and thus an unreachable file
+            pass

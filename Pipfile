@@ -13,6 +13,8 @@ requests = "*"
 pyppeteer = "*"
 wcag-contrast-ratio = "*"
 black = "*"
+rake-nltk = "*"
+langdetect = "*"
 
 [requires]
 python_version = "3.7"

@@ -5,6 +5,17 @@ import os
 import requests
 import asyncio
 
+
+# On *nix systems, the event loop needs to have a child watcher attached but this isn't
+# done automatically, additionally it can only be done while in the main thread which
+# is where Flask runs.
+try:
+    loop = asyncio.get_event_loop()
+except RuntimeError:
+    loop = asyncio.new_event_loop()
+finally:
+    asyncio.get_child_watcher().attach_loop(loop)
+
 app = Flask(__name__, static_folder="dist/static", template_folder="dist")
 
 ROOT_DIR = Path(os.environ.get("ROOT_DIR") or Path.cwd())
@@ -20,9 +31,11 @@ def get_analysis():
     if output_format not in ("html", "json"):
         output_format = "json"
 
-    print("Calling lighthouse")
+    print(f"Calling lighthouse on {target_url}")
     engine = Engine(target_url=target_url)
-    asyncio.run(engine.run_analysis())
+
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(engine.run_analysis())
 
     print("Sending analysis")
     if output_format == "json":
@@ -44,7 +57,9 @@ def crawl():
 
     print("Calling crawler")
     engine = Engine(target_url=target_url)
-    asyncio.run(engine.run_crawler())
+
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(engine.run_crawler())
 
     return (
         send_file(
@@ -62,9 +77,14 @@ def awe():
 
     engine = Engine(target_url=target_url)
 
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(engine.run_engine())
+
     return (
         send_file(
-            engine.run_engine(), as_attachment=True, attachment_filename="awe_site.html"
+            engine.accessible_site,
+            as_attachment=True,
+            attachment_filename="awe_site.html",
         ),
         200,
     )
@@ -79,4 +99,8 @@ def catch_all(path):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(
+        debug=True,
+        host="0.0.0.0" if os.environ.get("ON_GCP") else None,
+        port=8000 if os.environ.get("ON_GCP") else None,
+    )
