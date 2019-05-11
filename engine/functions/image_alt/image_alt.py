@@ -12,8 +12,8 @@ def run(tag_data):
     snippet = tag_data["snippet"]
 
     # Modifications to the BeautifulSoup tag
-
-    snippet["alt"] = _annotate_image(_analyze_image(tag.img.get("src")))
+    #soup = BeautifulSoup(str(snippet),"html.parser")
+    snippet["alt"] = _annotate_image(_analyze_image(snippet.get("src")))
 
     tag_data["snippet"] = snippet
     return tag_data
@@ -39,11 +39,11 @@ def _annotate_image(annotations):
     """Prints detected features in the provided web annotations."""
     alt = ""
     if annotations.pages_with_matching_images:
-        # print('\n{} Pages with matching images retrieved'.format(
-        #     len(annotations.pages_with_matching_images)))
-
         for entity in annotations.web_entities:
             alt += entity.description + " "
+    else:
+        alt="image"
 
-            # print('Description: {}'.format(entity.description))
     return alt
+
+print(_annotate_image(_analyze_image("http://lobulate-retirement.000webhostapp.com/awe/images/1.jpg")))

@@ -6,6 +6,7 @@ import os
 import requests
 import asyncio
 from bs4 import BeautifulSoup
+import time
 
 # On *nix systems, the event loop needs to have a child watcher attached but this isn't
 # done automatically, additionally it can only be done while in the main thread which
@@ -85,7 +86,7 @@ def awe():
         send_file(
             engine.accessible_site,
             as_attachment=True,
-            attachment_filename="awe_site.html",
+            attachment_filename="awe_site"+str(int(round(time.time() * 1000)))+".html",
         ),
         200,
     )
@@ -128,7 +129,7 @@ def diff():
     new.string = str(newString)
 
     download = soup.find("a", {"id": "downloadlink"})
-    download["href"] = "/api/run_engine?url=" + target_url
+    download["href"] = "/api/run_engine?url=" + target_url + "&time="+str(int(round(time.time() * 1000)))
     byte_html = BytesIO()
     byte_html.write(soup.encode())
     byte_html.seek(0)
