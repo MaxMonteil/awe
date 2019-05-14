@@ -1,0 +1,72 @@
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw*
+tags
+
+# Python
+venv/
+venv*
+
+*.pyc
+*.pyo
+__pycache__/
+
+.pytest_cache/
+
+*.egg
+*.egg-info/
+
+# Javascript
+src/.temp
+node_modules/
+
+# General
+build/
+docs/_build/
+
+# Coverage Reports
+htmlcov/
+.coverage
+.coverage.*
+*,cover
+
+# local env files
+env/
+.env
+.env.*
+.flaskenv
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+
+# local files
+.todos.json
+
+# Secrets
+keys/
+
+# Miscellaneous
+.DS_Store
+.cache
+.tox/
+_mailinglist
+tags
+
+# Project Specific
+result.html
+result.json
+testResults.json
+output.html
+output.txt
+package-lock.json
+results/*
+share/
